@@ -589,7 +589,7 @@ function overwriteProxyGroups(params) {
             name: "自动选择",
             type: "select",
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Urltest.png",
-            proxies: ["ALL - 自动选择","HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
+            proxies: ["ALL-自动选择","HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
         },
         {
             name: "⚖️负载均衡",
