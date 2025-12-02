@@ -481,9 +481,7 @@ function overwriteProxyGroups(params) {
         { name: "DE-自动选择", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludeTerms}).*$`, "i") },
         { name: "NL-自动选择", regex: new RegExp(`^(?=.*${includeTerms.NL})(?!.*${excludeTerms}).*$`, "i") },
         { name: "0.1倍率-自动选择", regex: new RegExp(`^(?=.*0\.1)(?!.*${excludeTerms}).*$`, "i") },
-            name: "其它-自动选择",
-            regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i")
-        }
+        { name: "OR-自动选择", regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i") }
     ];
 
     const autoProxyGroups = autoProxyGroupRegexs
@@ -550,7 +548,7 @@ function overwriteProxyGroups(params) {
             icon: "https://i.postimg.cc/Hs16Zv8r/square.png"
         },
         {
-            name: "其他-手动选择",
+            name: "OR-手动选择",
             regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i"),
             icon: "https://i.postimg.cc/HLYLHSwk/earth.png"
         },
@@ -585,13 +583,13 @@ function overwriteProxyGroups(params) {
             name: "手动选择",
             type: "select",
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Cylink.png",
-            proxies: ["HK-手动选择", "JP-手动选择", "KR-手动选择", "SG-手动选择", "US-手动选择", "UK-手动选择", "FR-手动选择", "DE-手动选择", "TW-手动选择", "NL-手动选择"， "其他-手动选择"],
+            proxies: ["HK-手动选择", "JP-手动选择", "KR-手动选择", "SG-手动选择", "US-手动选择", "UK-手动选择", "FR-手动选择", "DE-手动选择", "TW-手动选择", "NL-手动选择"， "OR-手动选择"],
         },
         {
             name: "自动选择",
             type: "select",
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Urltest.png",
-            proxies: ["ALL - 自动选择","HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "其它-自动选择"],
+            proxies: ["ALL - 自动选择","HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
         },
         {
             name: "⚖️负载均衡",
@@ -614,25 +612,25 @@ function overwriteProxyGroups(params) {
         {
             name: "✈️电报信息",
             type: "select",
-            proxies: ["🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "其它-自动选择"],
+            proxies: ["🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Telegram.png"
         },
         {
             name: "🤖 AIGC",
             type: "select",
-            proxies: ["US-自动选择", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "其它-自动选择"],
+            proxies: ["US-自动选择", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png"
         },
         {
             name: "🍎苹果服务",
             type: "select",
-            proxies: ["DIRECT", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择",  "0.1倍率-自动选择", "其它-自动选择"],
+            proxies: ["DIRECT", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择",  "0.1倍率-自动选择", "OR-自动选择"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Apple.png"
         },
         {
             name: "Ⓜ️微软服务",
             type: "select",
-            proxies: ["DIRECT", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "其它-自动选择"],
+            proxies: ["DIRECT", "🎯节点选择", "HK-自动选择", "JP-自动选择", "KR-自动选择", "SG-自动选择", "US-自动选择", "UK-自动选择", "FR-自动选择", "DE-自动选择", "TW-自动选择", "NL-自动选择", "0.1倍率-自动选择", "OR-自动选择"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Microsoft.png"
         },
     ];
