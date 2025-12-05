@@ -601,18 +601,18 @@ function overwriteRules(params) {
         "RULE-SET,cdn_non_ip,Proxy",
         "RULE-SET,stream_non_ip,Proxy",
         "RULE-SET,telegram_non_ip,Telegram",
-        "RULE-SET,apple_cdn,Direct",
+        "RULE-SET,apple_cdn,DIRECT",
         "RULE-SET,download_domainset,Proxy",
         "RULE-SET,download_non_ip,Proxy",
-        "RULE-SET,microsoft_cdn_non_ip,Direct",
+        "RULE-SET,microsoft_cdn_non_ip,DIRECT",
         "RULE-SET,apple_cn_non_ip,DIRECT",
         "RULE-SET,apple_services,Apple",
         "RULE-SET,microsoft_non_ip,Microsoft",
         "RULE-SET,ai_non_ip,AIGC",
         "RULE-SET,global_non_ip,Proxy",
-        "RULE-SET,domestic_non_ip,Direct",
-        "RULE-SET,direct_non_ip,Direct",
-        "RULE-SET,lan_non_ip,Direct"
+        "RULE-SET,domestic_non_ip,DIRECT",
+        "RULE-SET,direct_non_ip,DIRECT",
+        "RULE-SET,lan_non_ip,DIRECT"
     ];
 
     const allNonipRules = [
