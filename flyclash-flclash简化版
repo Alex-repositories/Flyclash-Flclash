@@ -498,7 +498,7 @@ function overwriteProxyGroups(params) {
 
     const manualProxyGroups = [
         {
-            name: "其他选择",
+            name: "其他节点",
             regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i"),
             icon: "https://i.postimg.cc/HLYLHSwk/earth.png"
         },
