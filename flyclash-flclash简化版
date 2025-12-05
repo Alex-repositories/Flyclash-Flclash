@@ -480,8 +480,8 @@ function overwriteProxyGroups(params) {
         { name: "FR-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludeTerms}).*$`, "i") },
         { name: "DE-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludeTerms}).*$`, "i") },
         { name: "NL-自动", regex: new RegExp(`^(?=.*${includeTerms.NL})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "0.1倍率-自动选择", regex: new RegExp(`^(?=.*0\.1)(?!.*${excludeTerms}).*$`, "i") },
-        { name: "OR-自动选择", regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i") }
+        { name: "0.1-自动", regex: new RegExp(`^(?=.*0\.1)(?!.*${excludeTerms}).*$`, "i") },
+        { name: "OR-自动", regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i") }
     ];
 
     const autoProxyGroups = autoProxyGroupRegexs
@@ -525,14 +525,14 @@ function overwriteProxyGroups(params) {
             proxies: [
                 "Auto",
                 "Other",
-                "Direct",
+                "DIRECT",
             ],
         },
         {
             name: "Auto",
             type: "select",
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Urltest.png",
-            proxies: ["ALL-自动","HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1倍率-自动", "OR-自动"],
+            proxies: ["ALL-自动","HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1-自动", "OR-自动"],
         },
         {
             name: "负载均衡",
@@ -555,25 +555,25 @@ function overwriteProxyGroups(params) {
         {
             name: "Telegram",
             type: "select",
-            proxies: ["Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1倍率-自动", "OR-自动"],
+            proxies: ["Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1-自动", "OR-自动"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Telegram.png"
         },
         {
             name: "AIGC",
             type: "select",
-            proxies: ["Proxy", "US-自动", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1倍率-自动", "OR-自动"],
+            proxies: ["Proxy", "US-自动", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1-自动", "OR-自动"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/OpenAI.png"
         },
         {
             name: "Apple",
             type: "select",
-            proxies: ["Direct", "Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动",  "0.1倍率-自动", "OR-自动"],
+            proxies: ["DIRECT", "Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动",  "0.1-自动", "OR-自动"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Apple.png"
         },
         {
             name: "Microsoft",
             type: "select",
-            proxies: ["Direct", "Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1倍率-自动", "OR-自动"],
+            proxies: ["DIRECT", "Proxy", "HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1-自动", "OR-自动"],
             icon: "https://raw.githubusercontent.com/Orz-3/mini/master/Color/Microsoft.png"
         },
     ];
