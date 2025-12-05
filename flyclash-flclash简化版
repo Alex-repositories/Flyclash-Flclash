@@ -535,7 +535,7 @@ function overwriteProxyGroups(params) {
             proxies: ["ALL-自动","HK-自动", "JP-自动", "KR-自动", "SG-自动", "US-自动", "UK-自动", "FR-自动", "DE-自动", "TW-自动", "NL-自动", "0.1-自动", "OR-自动"],
         },
         {
-            name: "负载均衡",
+            name: "Node Status",
             type: "load-balance",
             url: "https://cp.cloudflare.com",
             interval: 300,
