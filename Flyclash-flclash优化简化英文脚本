@@ -437,7 +437,7 @@ function overwriteTunnel(params) {
     const tunnelOptions = {
         enable: true,
         stack: "mixed",
-        device: "tun0",
+        device: "TUN",
         "dns-hijack": ["any:53", "tcp://any:53"],
         "auto-route": true,
         "auto-detect-interface": true,
@@ -543,7 +543,7 @@ function overwriteProxyGroups(params) {
             name: "All-自动",
             type: "url-test",
             url: "https://cp.cloudflare.com/generate_204",
-            interval: 300,
+            interval: 600,
             tolerance: 50,
             proxies: allProxies,
             hidden: true,
@@ -589,7 +589,7 @@ function overwriteRules(params) {
     ];
 
     const customRules = [
-        // 建议置顶高频的微信/国内应用直连规则，防止被外界规则阻断
+        // 置顶高频的微信/国内应用直连规则，防止被外界规则阻断
         "DOMAIN-SUFFIX,weixin.qq.com,DIRECT",
         "DOMAIN-SUFFIX,wechat.com,DIRECT",
         "DOMAIN-KEYWORD,weixin,DIRECT"
