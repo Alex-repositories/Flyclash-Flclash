@@ -491,7 +491,7 @@ function overwriteProxyGroups(params) {
         {
             name: "Other",
             regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i"),
-            icon: "https://i.postimg.cc/HLYLHSwk/earth.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/Flyclash-Flclash@b126f9b96c77630776e47b0ca63ecbc7cbb5799f/Other.png"
         },
     ];
     const manualProxyGroupsConfig = manualProxyGroups
