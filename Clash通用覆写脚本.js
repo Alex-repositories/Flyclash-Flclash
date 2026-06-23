@@ -624,7 +624,7 @@ function overwriteRules(params) {
         "RULE-SET,google,Google",
         "RULE-SET,netflix,Netflix",
         "RULE-SET,tiktok,TikTok",
-        "RULE-SET,meta,Meta",
+        "RULE-SET,meta,Instagram",
     ];
 
     const nonipRules = [
