@@ -612,7 +612,6 @@ function overwriteProxyGroups(params) {
 
 // Overwrite Rules
 function overwriteRules(params) {
-    // ---------- 广告拦截 ----------
     const adNonipRules = [
         "RULE-SET,reject_non_ip,REJECT",
         "RULE-SET,reject_domainset,REJECT",
@@ -620,14 +619,12 @@ function overwriteRules(params) {
         "RULE-SET,reject_non_ip_no_drop,REJECT"
     ];
 
-    // ---------- 自定义直连规则（微信等） ----------
     const customRules = [
         "DOMAIN-SUFFIX,weixin.qq.com,DIRECT",
         "DOMAIN-SUFFIX,wechat.com,DIRECT",
         "DOMAIN-KEYWORD,weixin,DIRECT"
     ];
 
-    // ---------- 新增的具体服务规则集 ----------
     const serviceRuleSets = [
         "RULE-SET,youtube,YouTube",
         "RULE-SET,google,Google",
@@ -636,7 +633,6 @@ function overwriteRules(params) {
         "RULE-SET,meta,Meta",
     ];
 
-    // ---------- 通用域名分流 ----------
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
         "RULE-SET,cdn_non_ip,Proxy",
@@ -676,11 +672,6 @@ function overwriteRules(params) {
 
     params.rules = rules;
 
-    const ruleProviders = {
-};
-
-    params["rule-providers"] = ruleProviders;
-}
     const ruleProviders = {
         reject_non_ip_no_drop: {
             type: "http",
@@ -805,7 +796,7 @@ function overwriteRules(params) {
             url: "https://ruleset.skk.moe/Clash/non_ip/google.txt",
             path: "./rule_set/google.txt",
             interval: 43200,
-            format: "text",      
+            format: "text",
             proxy: "Proxy"
         },
         netflix: {
