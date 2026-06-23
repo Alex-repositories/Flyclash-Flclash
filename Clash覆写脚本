@@ -555,7 +555,7 @@ function overwriteProxyGroups(params) {
             name: "AIGC",
             type: "select",
             proxies: ["Proxy", "DIRECT", "HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.1-自动"],
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_01@main/Chatgpt.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_01@main/AI.png"
         },
         {
             name: "Apple",
