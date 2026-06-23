@@ -587,6 +587,12 @@ function overwriteProxyGroups(params) {
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_01@main/Telegram.png"
         },
         {
+            name: "TikTok",
+            type: "select",
+            proxies: ["Proxy", "Select", "DIRECT", "HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.1-自动"],
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_01@main/Tiktok.png"
+        },
+        {
             name: "YouTube",
             type: "select",
             proxies: ["Proxy", "Select", "DIRECT", "HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.1-自动"],
@@ -664,6 +670,13 @@ function overwriteRules(params) {
         "DOMAIN-SUFFIX,nflxso.net,Netflix",
         "DOMAIN-SUFFIX,nflxvideo.net,Netflix",
         "DOMAIN-KEYWORD,netflix,Netflix",
+        // TikTok
+        "DOMAIN-SUFFIX,tiktok.com,TikTok",
+        "DOMAIN-SUFFIX,tiktokcdn.com,TikTok",
+        "DOMAIN-SUFFIX,tiktokv.com,TikTok",
+        "DOMAIN-SUFFIX,musical.ly,TikTok",
+        "DOMAIN-SUFFIX,byteoversea.com,TikTok",
+        "DOMAIN-KEYWORD,tiktok,TikTok",
     ];
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
