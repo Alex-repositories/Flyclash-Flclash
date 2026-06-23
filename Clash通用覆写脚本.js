@@ -465,7 +465,7 @@ function overwriteProxyGroups(params) {
         { name: "UK-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludeTerms}).*$`, "i") },
         { name: "FR-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludeTerms}).*$`, "i") },
         { name: "DE-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "0.1-自动", regex: new RegExp(`^(?=.*0\\.1)(?!.*${excludeTerms}).*$`, "i") },
+        { name: "0.1-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludeTerms}).*$`, "i") },
     ];
     const autoProxyGroups = autoProxyGroupRegexs
         .map((item) => ({
