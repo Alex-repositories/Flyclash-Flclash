@@ -1,5 +1,4 @@
-// FlyClash Configuration Script (Optimized & Fixed)
-
+// Clash系通用覆写脚本
 function main(params) {
     if (!params || !params.proxies || !Array.isArray(params.proxies)) return params;
     // 全局过滤：移除名称含有机场通告、剩余流量、到期时间等无效提示节点
