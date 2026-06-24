@@ -1,7 +1,7 @@
 // Clash系通用覆写脚本
 function main(params) {
     if (!params || !params.proxies || !Array.isArray(params.proxies)) return params;
-    const globalExcludeKeywords = /(邀请返佣|重新从网站获取订阅|公告信息|重置|套餐|剩余)/i;
+    const globalExcludeKeywords = /(邀请返佣|重新从网站获取订阅|公告信息|重置|套餐|剩余|网址|https?:\/\/|\.[a-z]{2,})/i;
     params.proxies = params.proxies.filter(p => !globalExcludeKeywords.test(p.name));
 
     overwriteBasicOptions(params);
