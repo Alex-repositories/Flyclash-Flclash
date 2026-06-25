@@ -558,7 +558,7 @@ function overwriteProxyGroups(params) {
             name: "Auto",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_01@main/Auto.png",
-            proxies: ["All-自动", "HK-自动", "HK-手动", "TW-自动", "TW-手动", "JP-自动", "JP-手动", "SG-自动", "SG-手动", "US-自动", "US-手动",  "KR-自动", "KR-手动", "UK-自动", "UK-手动", "FR-自动", "FR-手动","DE-自动", "DE-手动", "0.x-自动"],
+            proxies: ["All-自动", "HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.x-自动"],
         },
         {
             name: "Select",
