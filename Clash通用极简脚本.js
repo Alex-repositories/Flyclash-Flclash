@@ -6,7 +6,6 @@ function main(params) {
 
     overwriteBasicOptions(params);
     overwriteDns(params);
-    overwriteFakeIpFilter(params);
     overwriteNameserverPolicy(params);
     overwriteHosts(params);
     overwriteTunnel(params);
@@ -48,9 +47,7 @@ function overwriteBasicOptions(params) {
             "skip-domain": ["+.mesh.mihome.io", "+.push.apple.com", "+.push.googleapis.com", "+.mtalk.google.com"]
         },
     };
-    Object.keys(otherOptions).forEach((key) => {
-        params[key] = otherOptions[key];
-    });
+    Object.assign(params, otherOptions);
 }
 
 // Overwrite DNS
@@ -76,21 +73,16 @@ function overwriteDns(params) {
             "https://dns.google/dns-query"
         ],
         "default-nameserver": ["223.5.5.5", "119.29.29.29"],
+        "fake-ip-filter": [
+            "*.m2m", "*.bogon", "*.lan", "*.local", "*.internal", "*.localdomain",
+            "+.injections.adguard.org", "+.local.adguard.org", "+.home.arpa",
+            "dns.msftncsi.com", "*.srv.nintendo.net", "*.stun.playstation.net",
+            "xbox.*.microsoft.com", "*.xboxlive.com", "*.turn.twilio.com",
+            "*.stun.twilio.com", "stun.syncthing.net", "stun.*", "*.sslip.io",
+            "*.nip.io", "*.example.com", "+.internal.corp"
+        ],
     };
-    params.dns = { ...dnsOptions };
-}
-
-// Overwrite DNS Fake IP Filter
-function overwriteFakeIpFilter(params) {
-    const fakeIpFilter = [
-        "*.m2m", "*.bogon", "*.lan", "*.local", "*.internal", "*.localdomain",
-        "+.injections.adguard.org", "+.local.adguard.org", "+.home.arpa",
-        "dns.msftncsi.com", "*.srv.nintendo.net", "*.stun.playstation.net",
-        "xbox.*.microsoft.com", "*.xboxlive.com", "*.turn.twilio.com",
-        "*.stun.twilio.com", "stun.syncthing.net", "stun.*", "*.sslip.io",
-        "*.nip.io", "*.example.com", "+.internal.corp"
-    ];
-    params.dns["fake-ip-filter"] = fakeIpFilter;
+    params.dns = dnsOptions;
 }
 
 // Overwrite DNS Nameserver Policy
@@ -437,7 +429,7 @@ function overwriteTunnel(params) {
         "strict-route": false,
         "route-exclude-address": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10"],
     };
-    params.tun = { ...tunnelOptions };
+    params.tun = tunnelOptions;
 }
 
 function overwriteProxyGroups(params) {
@@ -454,7 +446,6 @@ function overwriteProxyGroups(params) {
         FR: "(法国|FR|France|🇫🇷)",
         DE: "(德国|DE|Germany|🇩🇪)",
     };
-    const allCountryTerms = Object.values(includeTerms).join("|");
     const excludeHkTwRegex = new RegExp(`^(?!.*(?:${includeTerms.HK}|${includeTerms.TW}))(?!.*${excludeTerms}).*$`, "i");
     const autoProxyGroupRegexs = [
         { name: "HK-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludeTerms}).*$`, "i") },
@@ -531,12 +522,11 @@ function overwriteProxyGroups(params) {
         .map((item) => ({
             name: item.name,
             type: "select",
-            proxies: getManualProxiesByRegex(params, item.regex),
+            proxies: getProxiesByRegex(params, item.regex),
             icon: item.icon,
             hidden: false,
         }))
         .filter((item) => item.proxies.length > 0);
-    const loadBalanceStrategy = "consistent-hashing";
 
     const groups = [
         {
@@ -630,8 +620,6 @@ function overwriteRules(params) {
         ...nonipRules,
         ...ipRules
     ];
-
-    params.rules = rules;
 
     const ruleProviders = {
         reject_non_ip_no_drop: {
@@ -920,11 +908,6 @@ function overwriteRules(params) {
 }
 
 function getProxiesByRegex(params, regex) {
-    const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
-    return matchedProxies.length > 0 ? matchedProxies : ["DIRECT"];
-}
-
-function getManualProxiesByRegex(params, regex) {
     const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
     return matchedProxies.length > 0 ? matchedProxies : ["DIRECT"];
 }
