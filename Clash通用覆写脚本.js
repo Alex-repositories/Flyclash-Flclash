@@ -431,7 +431,7 @@ function overwriteTunnel(params) {
         enable: true,
         stack: "mixed",
         device: "TUN",
-        "dns-hijack": ["any:53", "tcp://any:53"],
+        "dns-hijack": ["any:53"],
         "auto-route": true,
         "auto-detect-interface": true,
         "strict-route": false,
@@ -472,7 +472,7 @@ function overwriteProxyGroups(params) {
             name: item.name,
             type: "url-test",
             url: "https://cp.cloudflare.com/generate_204",
-            interval: 1800,
+            interval: 900,
             tolerance: 50,
             proxies: getProxiesByRegex(params, item.regex),
             hidden: true,
@@ -480,11 +480,6 @@ function overwriteProxyGroups(params) {
         .filter((item) => item.proxies.length > 0);
     
     const manualProxyGroups = [
-        {
-            name: "Other",
-            regex: new RegExp(`^(?!.*(?:${allCountryTerms}|${excludeTerms})).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Other.png"
-        },
         {
             name: "HK-手动",
             regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludeTerms}).*$`, "i"),
@@ -550,7 +545,6 @@ function overwriteProxyGroups(params) {
             proxies: [
                 "Auto",
                 "Select",
-                "Other",
                 "DIRECT",
             ],
         },
@@ -570,7 +564,7 @@ function overwriteProxyGroups(params) {
             name: "All-自动",
             type: "url-test",
             url: "https://cp.cloudflare.com/generate_204",
-            interval: 1800,
+            interval: 900,
             tolerance: 50,
             proxies: allProxies,
             hidden: true,
