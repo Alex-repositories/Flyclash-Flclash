@@ -577,22 +577,13 @@ function overwriteProxyGroups(params) {
             name: "Auto",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Auto.png",
-            proxies: ["All-自动", "HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.x-自动"],
+            proxies: ["HK-自动", "TW-自动", "JP-自动", "SG-自动", "US-自动", "KR-自动", "UK-自动", "FR-自动", "DE-自动", "0.x-自动"],
         },
         {
             name: "Select",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Select.png",
             proxies: safeAllProxies,
-        },
-        {
-            name: "All-自动",
-            type: "url-test",
-            url: "https://cp.cloudflare.com/generate_204",
-            interval: 900,
-            tolerance: 50,
-            proxies: safeAllProxies,
-            hidden: true,
         },
         {
             name: "AIGC",
