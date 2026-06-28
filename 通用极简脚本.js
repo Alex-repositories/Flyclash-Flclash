@@ -235,51 +235,7 @@ function overwriteProxyGroups(params) {
         .filter((item) => item.proxies.length > 0);
     
     const manualProxyGroups = [
-        {
-            name: "HK-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/HKflag.png"
-        },
-        {
-            name: "TW-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/TWflag.png"
-        },
-        {
-            name: "JP-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/JPflag.png"
-        },
-        {
-            name: "SG-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/SGflag.png"
-        },
-        {
-            name: "US-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/USflag.png"
-        },
-        {
-            name: "KR-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/KRflag.png"
-        },
-        {
-            name: "UK-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/UKflag.png"
-        },
-        {
-            name: "FR-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/FRflag.png"
-        },
-        {
-            name: "DE-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/DEflag.png"
-        }
+            // 暂无
     ];
     const manualProxyGroupsConfig = manualProxyGroups
         .map((item) => ({
