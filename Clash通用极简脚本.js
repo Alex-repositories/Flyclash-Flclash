@@ -1,16 +1,34 @@
-// Clash通用极简脚本(过滤香港台湾节点)
-function main(params) {
-    if (!params || !params.proxies || !Array.isArray(params.proxies)) return params;
-    const globalExcludeKeywords = /(邀请返佣|重新从网站获取订阅|公告信息|重置|套餐|剩余|网站|网址|https?:\/\/|\.[a-z]{2,})/i;
-    params.proxies = params.proxies.filter(p => !globalExcludeKeywords.test(p.name));
+// Clash通用极简脚本(过滤香港台湾两类限制较多的节点)
+const EXCLUDE_KEYWORDS_PATTERN = "邀请返佣|重新从网站获取订阅|公告信息|重置|套餐|剩余|到期|主页|官网|游戏|关注|网站|网址|地址|有效|香港|Hongkong|HK|台湾|台北|Taiwan|TW|禁止|邮箱|发布|客服|订阅|节点|问题|联系|https?:\\/\\/|\\.[a-z]{2,}";
+const globalExcludeKeywords = new RegExp(`(${EXCLUDE_KEYWORDS_PATTERN})`, "i");
 
-    overwriteBasicOptions(params);
-    overwriteDns(params);
-    overwriteNameserverPolicy(params);
-    overwriteHosts(params);
-    overwriteTunnel(params);
-    overwriteProxyGroups(params);
-    overwriteRules(params);
+function main(params) {
+    if (!params || !params.proxies || !Array.isArray(params.proxies)) {
+        console.error("Invalid params or proxies not found");
+        return params;
+    }
+
+    const beforeCount = params.proxies.length;
+    params.proxies = params.proxies.filter(p => !globalExcludeKeywords.test(p.name));
+    const filteredCount = beforeCount - params.proxies.length;
+    if (filteredCount > 0) {
+        console.log(`已过滤 ${filteredCount} 个无效节点`);
+    }
+
+    try {
+        overwriteBasicOptions(params);
+        overwriteDns(params);
+        overwriteFakeIpFilter(params);
+        overwriteNameserverPolicy(params);
+        overwriteHosts(params);
+        overwriteTunnel(params);
+        overwriteProxyGroups(params);
+        overwriteRules(params);
+        console.log("Configuration loaded successfully");
+    } catch (error) {
+        console.error("Script execution failed:", error);
+    }
+
     return params;
 }
 
@@ -47,7 +65,9 @@ function overwriteBasicOptions(params) {
             "skip-domain": ["+.mesh.mihome.io", "+.push.apple.com", "+.push.googleapis.com", "+.mtalk.google.com"]
         },
     };
-    Object.assign(params, otherOptions);
+    Object.keys(otherOptions).forEach((key) => {
+        params[key] = otherOptions[key];
+    });
 }
 
 // Overwrite DNS
@@ -73,16 +93,21 @@ function overwriteDns(params) {
             "https://dns.google/dns-query"
         ],
         "default-nameserver": ["223.5.5.5", "119.29.29.29"],
-        "fake-ip-filter": [
-            "*.m2m", "*.bogon", "*.lan", "*.local", "*.internal", "*.localdomain",
-            "+.injections.adguard.org", "+.local.adguard.org", "+.home.arpa",
-            "dns.msftncsi.com", "*.srv.nintendo.net", "*.stun.playstation.net",
-            "xbox.*.microsoft.com", "*.xboxlive.com", "*.turn.twilio.com",
-            "*.stun.twilio.com", "stun.syncthing.net", "stun.*", "*.sslip.io",
-            "*.nip.io", "*.example.com", "+.internal.corp"
-        ],
     };
-    params.dns = dnsOptions;
+    params.dns = { ...dnsOptions };
+}
+
+// Overwrite DNS Fake IP Filter
+function overwriteFakeIpFilter(params) {
+    const fakeIpFilter = [
+        "*.m2m", "*.bogon", "*.lan", "*.local", "*.internal", "*.localdomain",
+        "+.injections.adguard.org", "+.local.adguard.org", "+.home.arpa",
+        "dns.msftncsi.com", "*.srv.nintendo.net", "*.stun.playstation.net",
+        "xbox.*.microsoft.com", "*.xboxlive.com", "*.turn.twilio.com",
+        "*.stun.twilio.com", "stun.syncthing.net", "stun.*", "*.sslip.io",
+        "*.nip.io", "*.example.com", "+.internal.corp"
+    ];
+    params.dns["fake-ip-filter"] = fakeIpFilter;
 }
 
 // Overwrite DNS Nameserver Policy
@@ -429,12 +454,13 @@ function overwriteTunnel(params) {
         "strict-route": false,
         "route-exclude-address": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10"],
     };
-    params.tun = tunnelOptions;
+    params.tun = { ...tunnelOptions };
 }
 
 function overwriteProxyGroups(params) {
     const allProxies = params["proxies"].map((e) => e.name);
-    const excludeTerms = "(剩余|到期|主页|官网|游戏|关注|网站|地址|有效|网址|禁止|邮箱|发布|客服|订阅|节点|问题|联系)";
+    const excludePattern = EXCLUDE_KEYWORDS_PATTERN;
+
     const includeTerms = {
         HK: "(香港|HK|Hong|🇭🇰)",
         TW: "(台湾|TW|Taiwan|Wan|🇹🇼|🇨🇳)",
@@ -446,78 +472,86 @@ function overwriteProxyGroups(params) {
         FR: "(法国|FR|France|🇫🇷)",
         DE: "(德国|DE|Germany|🇩🇪)",
     };
-    const excludeHkTwRegex = new RegExp(`^(?!.*(?:${includeTerms.HK}|${includeTerms.TW}))(?!.*${excludeTerms}).*$`, "i");
+
     const autoProxyGroupRegexs = [
-        { name: "HK-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "TW-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "SG-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "JP-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "KR-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "US-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "UK-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "FR-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "DE-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludeTerms}).*$`, "i") },
-        { name: "0.x-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludeTerms}).*$`, "i") },
+        { name: "HK-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "TW-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "SG-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "JP-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "KR-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "US-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "UK-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "FR-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "DE-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "0.x-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), isMain: false },
     ];
+
     const autoProxyGroups = autoProxyGroupRegexs
-        .map((item) => ({
-            name: item.name,
-            type: "url-test",
-            url: "https://cp.cloudflare.com/generate_204",
-            interval: 900,
-            tolerance: 50,
-            proxies: getProxiesByRegex(params, item.regex),
-            hidden: true,
-        }))
+        .map((item) => {
+            const baseConfig = {
+                name: item.name,
+                type: "url-test",
+                url: "https://cp.cloudflare.com/generate_204",
+                interval: 900,
+                tolerance: 50,
+                proxies: getProxiesByRegex(params, item.regex),
+                hidden: true,
+            };
+            if (!item.isMain) {
+                baseConfig.lazy = true;
+            }
+            return baseConfig;
+        })
         .filter((item) => item.proxies.length > 0);
     
     const manualProxyGroups = [
         {
             name: "HK-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/HKflag.png"
         },
         {
             name: "TW-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/TWflag.png"
         },
         {
             name: "JP-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/JPflag.png"
         },
         {
             name: "SG-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/SGflag.png"
         },
         {
             name: "US-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/USflag.png"
         },
         {
             name: "KR-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/KRflag.png"
         },
         {
             name: "UK-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/UKflag.png"
         },
         {
             name: "FR-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/FRflag.png"
         },
         {
             name: "DE-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludeTerms}).*$`, "i"),
+            regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/DEflag.png"
         }
     ];
+
     const manualProxyGroupsConfig = manualProxyGroups
         .map((item) => ({
             name: item.name,
@@ -528,12 +562,14 @@ function overwriteProxyGroups(params) {
         }))
         .filter((item) => item.proxies.length > 0);
 
+    const safeAllProxies = allProxies.length > 0 ? allProxies : ["DIRECT"];
+
     const groups = [
         {
             name: "Proxy",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Proxy.png",
-            proxies: ["Auto", "Select", "DIRECT", "HK-手动", "TW-手动", "JP-手动", "SG-手动", "US-手动", "KR-手动", "UK-手动", "FR-手动", "DE-手动"],
+            proxies: ["Auto", "Select", "DIRECT"],
         },
         {
             name: "Auto",
@@ -545,7 +581,7 @@ function overwriteProxyGroups(params) {
             name: "Select",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Select.png",
-            proxies: allProxies,
+            proxies: safeAllProxies,
         },
         {
             name: "All-自动",
@@ -553,10 +589,11 @@ function overwriteProxyGroups(params) {
             url: "https://cp.cloudflare.com/generate_204",
             interval: 900,
             tolerance: 50,
-            proxies: getProxiesByRegex(params, excludeHkTwRegex), // 过滤香港台湾节点
+            proxies: safeAllProxies,
             hidden: true,
         }
     ];
+    
     groups.push(...autoProxyGroups);
     groups.push(...manualProxyGroupsConfig);
     params["proxy-groups"] = groups;
@@ -569,50 +606,45 @@ function overwriteRules(params) {
         "RULE-SET,reject_non_ip_drop,REJECT-DROP",
         "RULE-SET,reject_non_ip_no_drop,REJECT"
     ];
-
     const customRules = [
         "DOMAIN-SUFFIX,weixin.qq.com,DIRECT",
         "DOMAIN-SUFFIX,wechat.com,DIRECT",
         "DOMAIN-KEYWORD,weixin,DIRECT"
     ];
-
     const serviceRuleSets = [
-        "RULE-SET,youtube,Proxy",
-        "RULE-SET,google,Proxy",
-        "RULE-SET,netflix,Proxy",
-        "RULE-SET,tiktok,Proxy",
-        "RULE-SET,meta,Proxy",
+        "RULE-SET,youtube,YouTube",
+        "RULE-SET,google,Google",
+        "RULE-SET,netflix,Netflix",
+        "RULE-SET,tiktok,TikTok",
+        "RULE-SET,meta,Instagram",
     ];
-
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
         "RULE-SET,cdn_non_ip,Proxy",
         "RULE-SET,stream_non_ip,Proxy",
-        "RULE-SET,telegram_non_ip,Proxy",
+        "RULE-SET,telegram_non_ip,Telegram",
         "RULE-SET,apple_cdn,DIRECT",
         "RULE-SET,download_domainset,Proxy",
         "RULE-SET,download_non_ip,Proxy",
         "RULE-SET,microsoft_cdn_non_ip,DIRECT",
         "RULE-SET,apple_cn_non_ip,DIRECT",
-        "RULE-SET,apple_services,Proxy",
-        "RULE-SET,microsoft_non_ip,Proxy",
-        "RULE-SET,ai_non_ip,Proxy",
+        "RULE-SET,apple_services,Apple",
+        "RULE-SET,microsoft_non_ip,Microsoft",
+        "RULE-SET,ai_non_ip,AIGC",
         "RULE-SET,global_non_ip,Proxy",
         "RULE-SET,domestic_non_ip,DIRECT",
         "RULE-SET,direct_non_ip,DIRECT",
         "RULE-SET,lan_non_ip,DIRECT"
     ];
-
     const ipRules = [
         "RULE-SET,reject_ip,REJECT",
-        "RULE-SET,telegram_ip,Proxy",
+        "RULE-SET,telegram_ip,Telegram",
         "RULE-SET,stream_ip,Proxy",
         "RULE-SET,lan_ip,DIRECT",
         "RULE-SET,domestic_ip,DIRECT",
         "RULE-SET,china_ip,DIRECT",
         "MATCH,Proxy"
     ];
-
     const rules = [
         ...customRules,
         ...adNonipRules,
@@ -620,6 +652,7 @@ function overwriteRules(params) {
         ...nonipRules,
         ...ipRules
     ];
+    params.rules = rules;
 
     const ruleProviders = {
         reject_non_ip_no_drop: {
@@ -902,12 +935,12 @@ function overwriteRules(params) {
             proxy: "Proxy"
         }
     };
-
     params["rule-providers"] = ruleProviders;
     params["rules"] = rules;
 }
 
-function getProxiesByRegex(params, regex) {
+function getProxiesByRegex(params, regex, fallbackToDirect = true) {
     const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
-    return matchedProxies.length > 0 ? matchedProxies : ["DIRECT"];
+    if (matchedProxies.length > 0) return matchedProxies;
+    return fallbackToDirect ? ["DIRECT"] : [];
 }
