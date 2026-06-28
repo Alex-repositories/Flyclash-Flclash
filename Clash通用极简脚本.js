@@ -612,25 +612,25 @@ function overwriteRules(params) {
         "DOMAIN-KEYWORD,weixin,DIRECT"
     ];
     const serviceRuleSets = [
-        "RULE-SET,youtube,YouTube",
-        "RULE-SET,google,Google",
-        "RULE-SET,netflix,Netflix",
-        "RULE-SET,tiktok,TikTok",
-        "RULE-SET,meta,Instagram",
+        "RULE-SET,youtube,Proxy",
+        "RULE-SET,google,Proxy",
+        "RULE-SET,netflix,Proxy",
+        "RULE-SET,tiktok,Proxy",
+        "RULE-SET,meta,Proxy",
     ];
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
         "RULE-SET,cdn_non_ip,Proxy",
         "RULE-SET,stream_non_ip,Proxy",
-        "RULE-SET,telegram_non_ip,Telegram",
+        "RULE-SET,telegram_non_ip,Proxy",
         "RULE-SET,apple_cdn,DIRECT",
         "RULE-SET,download_domainset,Proxy",
         "RULE-SET,download_non_ip,Proxy",
         "RULE-SET,microsoft_cdn_non_ip,DIRECT",
         "RULE-SET,apple_cn_non_ip,DIRECT",
-        "RULE-SET,apple_services,Apple",
-        "RULE-SET,microsoft_non_ip,Microsoft",
-        "RULE-SET,ai_non_ip,AIGC",
+        "RULE-SET,apple_services,Proxy",
+        "RULE-SET,microsoft_non_ip,Proxy",
+        "RULE-SET,ai_non_ip,Proxy",
         "RULE-SET,global_non_ip,Proxy",
         "RULE-SET,domestic_non_ip,DIRECT",
         "RULE-SET,direct_non_ip,DIRECT",
@@ -638,7 +638,7 @@ function overwriteRules(params) {
     ];
     const ipRules = [
         "RULE-SET,reject_ip,REJECT",
-        "RULE-SET,telegram_ip,Telegram",
+        "RULE-SET,telegram_ip,Proxy",
         "RULE-SET,stream_ip,Proxy",
         "RULE-SET,lan_ip,DIRECT",
         "RULE-SET,domestic_ip,DIRECT",
