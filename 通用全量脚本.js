@@ -476,10 +476,10 @@ function overwriteProxyGroups(params) {
     const autoProxyGroupRegexs = [
         { name: "香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), isMain: true },
         { name: "台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "新加坡-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
         { name: "日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
         { name: "美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
         { name: "英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), isMain: false },
         { name: "法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
         { name: "德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), isMain: false },
@@ -521,7 +521,7 @@ function overwriteProxyGroups(params) {
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/JPflag.png"
         },
         {
-            name: "狮城-手动",
+            name: "新加坡-手动",
             regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"),
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/SGflag.png"
         },
@@ -564,7 +564,7 @@ function overwriteProxyGroups(params) {
 
     const safeAllProxies = allProxies.length > 0 ? allProxies : ["DIRECT"];
 
-    const commonGroupProxies = ["Proxy", "DIRECT", "香港-自动", "香港-手动", "台湾-自动", "台湾-手动", "日本-自动", "日本-手动", "狮城-自动", "狮城-手动", "美国-自动", "美国-手动", "韩国-自动", "韩国-手动", "英国-自动", "英国-手动", "法国-自动", "法国-手动", "德国-自动", "德国-手动", "0.x-自动"];
+    const commonGroupProxies = ["Proxy", "DIRECT", "香港-自动", "香港-手动", "台湾-自动", "台湾-手动", "日本-自动", "日本-手动", "新加坡-自动", "新加坡-手动", "美国-自动", "美国-手动", "韩国-自动", "韩国-手动", "英国-自动", "英国-手动", "法国-自动", "法国-手动", "德国-自动", "德国-手动", "0.x-自动"];
 
     const groups = [
         {
@@ -577,7 +577,7 @@ function overwriteProxyGroups(params) {
             name: "Auto",
             type: "select",
             icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Auto.png",
-            proxies: ["香港-自动", "台湾-自动", "日本-自动", "狮城-自动", "美国-自动", "韩国-自动", "英国-自动", "法国-自动", "德国-自动", "低倍率-自动"],
+            proxies: ["香港-自动", "台湾-自动", "日本-自动", "新加坡-自动", "美国-自动", "韩国-自动", "英国-自动", "法国-自动", "德国-自动", "低倍率-自动"],
         },
         {
             name: "Select",
