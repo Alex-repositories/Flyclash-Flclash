@@ -564,7 +564,7 @@ function overwriteProxyGroups(params) {
 
     const safeAllProxies = allProxies.length > 0 ? allProxies : ["DIRECT"];
 
-    const commonGroupProxies = ["Proxy", "DIRECT", "香港-自动", "香港-手动", "台湾-自动", "台湾-手动", "日本-自动", "日本-手动", "新加坡-自动", "新加坡-手动", "美国-自动", "美国-手动", "韩国-自动", "韩国-手动", "英国-自动", "英国-手动", "法国-自动", "法国-手动", "德国-自动", "德国-手动", "0.x-自动"];
+    const commonGroupProxies = ["Proxy", "DIRECT", "香港-自动", "香港-手动", "台湾-自动", "台湾-手动", "日本-自动", "日本-手动", "新加坡-自动", "新加坡-手动", "美国-自动", "美国-手动", "韩国-自动", "韩国-手动", "英国-自动", "英国-手动", "法国-自动", "法国-手动", "德国-自动", "德国-手动", "低倍率-自动"];
 
     const groups = [
         {
