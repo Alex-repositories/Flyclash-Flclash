@@ -486,169 +486,148 @@ function overwriteProxyGroups(params) {
         { name: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), isMain: false },
     ];
 
+    const validAutoGroupNames = new Set();
     const autoProxyGroups = autoProxyGroupRegexs
         .map((item) => {
+            const matchedProxies = getProxiesByRegex(params, item.regex, false);
+            if (matchedProxies.length > 0) {
+                validAutoGroupNames.add(item.name);
+            }
             const baseConfig = {
                 name: item.name,
                 type: "url-test",
                 url: "https://cp.cloudflare.com/generate_204",
                 interval: 900,
                 tolerance: 50,
-                proxies: getProxiesByRegex(params, item.regex),
-                hidden: true,
+                proxies: matchedProxies.length > 0 ? matchedProxies : ["DIRECT"],
+                hidden: true, 
             };
             if (!item.isMain) {
                 baseConfig.lazy = true;
             }
             return baseConfig;
         })
-        .filter((item) => item.proxies.length > 0);
-    
+        .filter((item) => validAutoGroupNames.has(item.name));
+
     const manualProxyGroups = [
-        {
-            name: "香港-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/HKflag.png"
-        },
-        {
-            name: "台湾-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/TWflag.png"
-        },
-        {
-            name: "日本-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/JPflag.png"
-        },
-        {
-            name: "新加坡-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/SGflag.png"
-        },
-        {
-            name: "美国-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/USflag.png"
-        },
-        {
-            name: "韩国-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/KRflag.png"
-        },
-        {
-            name: "英国-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/UKflag.png"
-        },
-        {
-            name: "法国-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/FRflag.png"
-        },
-        {
-            name: "德国-手动",
-            regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"),
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/DEflag.png"
-        }
+        { name: "香港节点", autoName: "香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/HKflag.png" },
+        { name: "台湾节点", autoName: "台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/TWflag.png" },
+        { name: "日本节点", autoName: "日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/JPflag.png" },
+        { name: "新加坡节点", autoName: "新加坡-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/SGflag.png" },
+        { name: "美国节点", autoName: "美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/USflag.png" },
+        { name: "韩国节点", autoName: "韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/KRflag.png" },
+        { name: "英国节点", autoName: "英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/UKflag.png" },
+        { name: "法国节点", autoName: "法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/FRflag.png" },
+        { name: "德国节点", autoName: "德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/DEflag.png" },
+        { name: "低倍率节点", autoName: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/0.x.png" }
     ];
 
+    const groupedNodes = new Set();
+
     const manualProxyGroupsConfig = manualProxyGroups
-        .map((item) => ({
-            name: item.name,
-            type: "select",
-            proxies: getProxiesByRegex(params, item.regex),
-            icon: item.icon,
-            hidden: false,
-        }))
+        .map((item) => {
+            const matchedProxies = getProxiesByRegex(params, item.regex, false);
+            matchedProxies.forEach(node => groupedNodes.add(node));
+
+            const groupProxies = [];
+            if (validAutoGroupNames.has(item.autoName)) {
+                groupProxies.push(item.autoName);
+            }
+            groupProxies.push(...matchedProxies);
+
+            const config = {
+                name: item.name,
+                type: "select",
+                proxies: groupProxies,
+                hidden: false,
+            };
+            if (item.icon) config.icon = item.icon;
+            return config;
+        })
         .filter((item) => item.proxies.length > 0);
 
-    const safeAllProxies = allProxies.length > 0 ? allProxies : ["DIRECT"];
+    const remainingNodes = allProxies.filter(node => !groupedNodes.has(node));
 
-    const commonGroupProxies = ["Proxy", "DIRECT", "香港-自动", "香港-手动", "台湾-自动", "台湾-手动", "日本-自动", "日本-手动", "新加坡-自动", "新加坡-手动", "美国-自动", "美国-手动", "韩国-自动", "韩国-手动", "英国-自动", "英国-手动", "法国-自动", "法国-手动", "德国-自动", "德国-手动", "低倍率-自动"];
+    const manualGroupNames = manualProxyGroupsConfig.map(g => g.name);
+    const commonGroupProxies = [...manualGroupNames, "DIRECT", ...remainingNodes];
+    
+    const proxyGroupProxies = [...manualGroupNames, "DIRECT", ...remainingNodes];
+
+    if (proxyGroupProxies.length === 0) proxyGroupProxies.push("DIRECT");
+    if (commonGroupProxies.length === 1) commonGroupProxies.push("DIRECT");
 
     const groups = [
         {
             name: "Proxy",
             type: "select",
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Proxy.png",
-            proxies: ["Auto", "Select", "DIRECT"],
-        },
-        {
-            name: "Auto",
-            type: "select",
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Auto.png",
-            proxies: ["香港-自动", "台湾-自动", "日本-自动", "新加坡-自动", "美国-自动", "韩国-自动", "英国-自动", "法国-自动", "德国-自动", "低倍率-自动"],
-        },
-        {
-            name: "Select",
-            type: "select",
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Select.png",
-            proxies: safeAllProxies,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Proxy.png",
+            proxies: proxyGroupProxies,
         },
         {
             name: "AIGC",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/AI.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/AI.png"
         },
         {
             name: "Apple",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Apple.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Apple.png"
         },
         {
             name: "Google",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Google.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Google.png"
         },
         {
             name: "Instagram",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Instagram.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Instagram.png"
         },
         {
             name: "Microsoft",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Microsoft.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Microsoft.png"
         },
         {
             name: "Netflix",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Netflix.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Netflix.png"
         },
         {
             name: "Telegram",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Telegram.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Telegram.png"
         },
         {
             name: "TikTok",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Tiktok.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Tiktok.png"
         },
         {
             name: "YouTube",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Youtube.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Youtube.png"
         },
         {
             name: "X",
             type: "select",
             proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_02@main/Twitter.png"
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Twitter.png"
         },
     ];
     
     groups.push(...autoProxyGroups);
     groups.push(...manualProxyGroupsConfig);
+    
     params["proxy-groups"] = groups;
 }
 
