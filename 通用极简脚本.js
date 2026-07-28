@@ -207,15 +207,15 @@ function overwriteProxyGroups(params) {
     };
 
     const autoProxyGroupRegexs = [
-        { name: "香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "🇭🇰 香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "🇨🇳 台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "🇸🇬 狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "🇯🇵 日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "🇺🇸 美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), isMain: true },
+        { name: "🇰🇷 韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "🇬🇧 英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "🇫🇷 法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
+        { name: "🇩🇪 德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), isMain: false },
         { name: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), isMain: false },
     ];
 
@@ -243,15 +243,15 @@ function overwriteProxyGroups(params) {
         .filter((item) => validAutoGroupNames.has(item.name));
 
     const manualProxyGroups = [
-        { name: "香港节点", autoName: "香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/HKflag.png" },
-        { name: "台湾节点", autoName: "台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/TWflag.png" },
-        { name: "日本节点", autoName: "日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/JPflag.png" },
-        { name: "狮城节点", autoName: "狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/SGflag.png" },
-        { name: "美国节点", autoName: "美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/USflag.png" },
-        { name: "韩国节点", autoName: "韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/KRflag.png" },
-        { name: "英国节点", autoName: "英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/UKflag.png" },
-        { name: "法国节点", autoName: "法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/FRflag.png" },
-        { name: "德国节点", autoName: "德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/DEflag.png" },
+        { name: "🇭🇰 香港节点", autoName: "🇭🇰 香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/HKflag.png" },
+        { name: "🇨🇳 台湾节点", autoName: "🇨🇳 台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/TWflag.png" },
+        { name: "🇯🇵 日本节点", autoName: "🇯🇵 日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/JPflag.png" },
+        { name: "🇸🇬 狮城节点", autoName: "🇸🇬 狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/SGflag.png" },
+        { name: "🇺🇸 美国节点", autoName: "🇺🇸 美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/USflag.png" },
+        { name: "🇰🇷 韩国节点", autoName: "🇰🇷 韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/KRflag.png" },
+        { name: "🇬🇧 英国节点", autoName: "🇬🇧 英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/UKflag.png" },
+        { name: "🇫🇷 法国节点", autoName: "🇫🇷 法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/FRflag.png" },
+        { name: "🇩🇪 德国节点", autoName: "🇩🇪 德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/DEflag.png" },
         { name: "低倍率节点", autoName: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/0.x.png" }
     ];
 
