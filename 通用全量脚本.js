@@ -294,7 +294,7 @@ function overwriteProxyGroups(params) {
         { name: "Telegram", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Telegram.png" },
         { name: "TikTok", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Tiktok.png" },
         { name: "YouTube", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Youtube.png" },
-        { name: "X", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Twitter.png" }
+        { name: "Twitter", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Twitter.png" }
     ].map(g => ({
         name: g.name,
         type: "select",
@@ -322,7 +322,8 @@ function overwriteRules(params) {
         "RULE-SET,google,Google",
         "RULE-SET,netflix,Netflix",
         "RULE-SET,tiktok,TikTok",
-        "RULE-SET,meta,Instagram"
+        "RULE-SET,meta,Instagram",
+        "RULE-SET,twitter,Twitter"
     ];
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
@@ -418,6 +419,11 @@ function overwriteRules(params) {
             key: "telegram_ip", behavior: "classical", format: "text",
             url: "https://ruleset.skk.moe/Clash/ip/telegram.txt",
             path: "./rule_set/sukkaw_ruleset/telegram_ip.txt"
+        },
+        {
+            key: "twitter", behavior: "classical", format: "yaml",
+            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Twitter/Twitter.yaml",
+            path: "./rule_set/twitter.yaml"
         },
         {
             key: "youtube", behavior: "classical", format: "yaml",
