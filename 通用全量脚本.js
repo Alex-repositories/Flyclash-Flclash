@@ -7,13 +7,10 @@ function main(params) {
         console.error("Invalid params or proxies not found");
         return params;
     }
-
     const beforeCount = params.proxies.length;
     params.proxies = params.proxies.filter(p => !globalExcludeKeywords.test(p.name));
     const filteredCount = beforeCount - params.proxies.length;
-    if (filteredCount > 0) {
-        console.log(`已过滤 ${filteredCount} 个无效节点`);
-    }
+    if (filteredCount > 0) console.log(`已过滤 ${filteredCount} 个无效节点`);
 
     try {
         overwriteBasicOptions(params);
@@ -28,7 +25,6 @@ function main(params) {
     } catch (error) {
         console.error("Script execution failed:", error);
     }
-
     return params;
 }
 
@@ -40,66 +36,40 @@ function overwriteBasicOptions(params) {
         "log-level": "warning",
         ipv6: false,
         "find-process-mode": "off",
-        profile: {
-            "store-selected": true,
-            "store-fake-ip": true,
-        },
+        profile: { "store-selected": true, "store-fake-ip": true },
         "unified-delay": true,
         "tcp-concurrent": true,
         "global-client-fingerprint": "chrome",
         sniffer: {
             enable: true,
             sniff: {
-                HTTP: {
-                    ports: [80, "8080-8880"],
-                    "override-destination": true,
-                },
-                TLS: {
-                    ports: [443, 8443],
-                    "override-destination": true,
-                },
-                QUIC: {
-                    ports: [443, 8443],
-                },
+                HTTP: { ports: [80, "8080-8880"], "override-destination": true },
+                TLS: { ports: [443, 8443], "override-destination": true },
+                QUIC: { ports: [443, 8443] }
             },
             "skip-domain": ["+.mesh.mihome.io", "+.push.apple.com", "+.push.googleapis.com", "+.mtalk.google.com"]
-        },
+        }
     };
-    Object.keys(otherOptions).forEach((key) => {
-        params[key] = otherOptions[key];
-    });
+    Object.assign(params, otherOptions);
 }
 
-// Overwrite DNS
 function overwriteDns(params) {
-    const dnsList = [
-        "https://223.5.5.5/dns-query",
-        "https://doh.pub/dns-query",
-    ];
-    const proxyDnsList = [
-        "223.5.5.5",
-        "119.29.29.29",
-    ];
     const dnsOptions = {
         enable: true,
         "prefer-h3": false,
         ipv6: false,
         "enhanced-mode": "fake-ip",
         "fake-ip-range": "198.18.0.1/16",
-        nameserver: dnsList,
-        "proxy-server-nameserver": proxyDnsList,
-        fallback: [
-            "https://1.1.1.1/dns-query",
-            "https://dns.google/dns-query"
-        ],
-        "default-nameserver": ["223.5.5.5", "119.29.29.29"],
+        nameserver: ["https://223.5.5.5/dns-query", "https://doh.pub/dns-query"],
+        "proxy-server-nameserver": ["223.5.5.5", "119.29.29.29"],
+        fallback: ["https://1.1.1.1/dns-query", "https://dns.google/dns-query"],
+        "default-nameserver": ["223.5.5.5", "119.29.29.29"]
     };
     params.dns = { ...dnsOptions };
 }
 
-// Overwrite DNS Fake IP Filter
 function overwriteFakeIpFilter(params) {
-    const fakeIpFilter = [
+    params.dns["fake-ip-filter"] = [
         "*.m2m", "*.bogon", "*.lan", "*.local", "*.internal", "*.localdomain",
         "+.injections.adguard.org", "+.local.adguard.org", "+.home.arpa",
         "dns.msftncsi.com", "*.srv.nintendo.net", "*.stun.playstation.net",
@@ -107,344 +77,111 @@ function overwriteFakeIpFilter(params) {
         "*.stun.twilio.com", "stun.syncthing.net", "stun.*", "*.sslip.io",
         "*.nip.io", "*.example.com", "+.internal.corp"
     ];
-    params.dns["fake-ip-filter"] = fakeIpFilter;
 }
 
-// Overwrite DNS Nameserver Policy
 function overwriteNameserverPolicy(params) {
-    const nameserverPolicy = {
-        "dns.alidns.com": "quic://223.5.5.5:853",
-        "doh.pub": "https://1.12.12.12/dns-query",
-        "doh.360.cn": "101.198.198.198",
-        "+.uc.cn": "quic://dns.alidns.com:853",
-        "+.alibaba.com": "quic://dns.alidns.com:853",
-        "*.alicdn.com": "quic://dns.alidns.com:853",
-        "*.ialicdn.com": "quic://dns.alidns.com:853",
-        "*.myalicdn.com": "quic://dns.alidns.com:853",
-        "*.alidns.com": "quic://dns.alidns.com:853",
-        "*.aliimg.com": "quic://dns.alidns.com:853",
-        "+.aliyun.com": "quic://dns.alidns.com:853",
-        "*.aliyuncs.com": "quic://dns.alidns.com:853",
-        "*.alikunlun.com": "quic://dns.alidns.com:853",
-        "*.alikunlun.net": "quic://dns.alidns.com:853",
-        "*.cdngslb.com": "quic://dns.alidns.com:853",
-        "+.alipay.com": "quic://dns.alidns.com:853",
-        "+.alipay.cn": "quic://dns.alidns.com:853",
-        "+.alipay.com.cn": "quic://dns.alidns.com:853",
-        "*.alipayobjects.com": "quic://dns.alidns.com:853",
-        "+.alibaba-inc.com": "quic://dns.alidns.com:853",
-        "*.alibabausercontent.com": "quic://dns.alidns.com:853",
-        "*.alibabadns.com": "quic://dns.alidns.com:853",
-        "+.alibabachengdun.com": "quic://dns.alidns.com:853",
-        "+.alicloudccp.com": "quic://dns.alidns.com:853",
-        "+.alipan.com": "quic://dns.alidns.com:853",
-        "+.aliyundrive.com": "quic://dns.alidns.com:853",
-        "+.aliyundrive.net": "quic://dns.alidns.com:853",
-        "+.cainiao.com": "quic://dns.alidns.com:853",
-        "+.cainiao.com.cn": "quic://dns.alidns.com:853",
-        "+.cainiaoyizhan.com": "quic://dns.alidns.com:853",
-        "+.guoguo-app.com": "quic://dns.alidns.com:853",
-        "+.etao.com": "quic://dns.alidns.com:853",
-        "+.yitao.com": "quic://dns.alidns.com:853",
-        "+.1688.com": "quic://dns.alidns.com:853",
-        "+.amap.com": "quic://dns.alidns.com:853",
-        "+.gaode.com": "quic://dns.alidns.com:853",
-        "+.autonavi.com": "quic://dns.alidns.com:853",
-        "+.dingtalk.com": "quic://dns.alidns.com:853",
-        "+.mxhichina.com": "quic://dns.alidns.com:853",
-        "+.soku.com": "quic://dns.alidns.com:853",
-        "+.tb.cn": "quic://dns.alidns.com:853",
-        "*.tbcdn.cn": "quic://dns.alidns.com:853",
-        "+.taobao.com": "quic://dns.alidns.com:853",
-        "*.taobaocdn.com": "quic://dns.alidns.com:853",
-        "*.tbcache.com": "quic://dns.alidns.com:853",
-        "+.tmall.com": "quic://dns.alidns.com:853",
-        "+.goofish.com": "quic://dns.alidns.com:853",
-        "+.xiami.com": "quic://dns.alidns.com:853",
-        "+.xiami.net": "quic://dns.alidns.com:853",
-        "*.ykimg.com": "quic://dns.alidns.com:853",
-        "+.youku.com": "quic://dns.alidns.com:853",
-        "+.tudou.com": "quic://dns.alidns.com:853",
-        "*.cibntv.net": "quic://dns.alidns.com:853",
-        "+.ele.me": "quic://dns.alidns.com:853",
-        "*.elemecdn.com": "quic://dns.alidns.com:853",
-        "+.feizhu.com": "quic://dns.alidns.com:853",
-        "+.taopiaopiao.com": "quic://dns.alidns.com:853",
-        "+.fliggy.com": "quic://dns.alidns.com:853",
-        "+.koubei.com": "quic://dns.alidns.com:853",
-        "+.mybank.cn": "quic://dns.alidns.com:853",
-        "+.mmstat.com": "quic://dns.alidns.com:853",
-        "+.uczzd.cn": "quic://dns.alidns.com:853",
-        "+.iconfont.cn": "quic://dns.alidns.com:853",
-        "+.freshhema.com": "quic://dns.alidns.com:853",
-        "+.hemamax.com": "quic://dns.alidns.com:853",
-        "+.hemaos.com": "quic://dns.alidns.com:853",
-        "+.hemashare.cn": "quic://dns.alidns.com:853",
-        "+.shyhhema.com": "quic://dns.alidns.com:853",
-        "+.sm.cn": "quic://dns.alidns.com:853",
-        "+.npmmirror.com": "quic://dns.alidns.com:853",
-        "+.alios.cn": "quic://dns.alidns.com:853",
-        "+.wandoujia.com": "quic://dns.alidns.com:853",
-        "+.aligames.com": "quic://dns.alidns.com:853",
-        "+.25pp.com": "quic://dns.alidns.com:853",
-        "*.aliapp.org": "quic://dns.alidns.com:853",
-        "+.tanx.com": "quic://dns.alidns.com:853",
-        "+.hellobike.com": "quic://dns.alidns.com:853",
-        "*.hichina.com": "quic://dns.alidns.com:853",
-        "*.yunos.com": "quic://dns.alidns.com:853",
-        "*.nlark.com": "quic://dns.alidns.com:853",
-        "*.yuque.com": "quic://dns.alidns.com:853",
-        "upos-sz-mirrorali.bilivideo.com": "quic://dns.alidns.com:853",
-        "upos-sz-estgoss.bilivideo.com": "quic://dns.alidns.com:853",
-        "ali-safety-video.acfun.cn": "quic://dns.alidns.com:853",
-        "*.qcloud.com": "https://doh.pub/dns-query",
-        "*.gtimg.cn": "https://doh.pub/dns-query",
-        "*.gtimg.com": "https://doh.pub/dns-query",
-        "*.gtimg.com.cn": "https://doh.pub/dns-query",
-        "*.gdtimg.com": "https://doh.pub/dns-query",
-        "*.idqqimg.com": "https://doh.pub/dns-query",
-        "*.udqqimg.com": "https://doh.pub/dns-query",
-        "*.igamecj.com": "https://doh.pub/dns-query",
-        "+.myapp.com": "https://doh.pub/dns-query",
-        "*.myqcloud.com": "https://doh.pub/dns-query",
-        "+.dnspod.com": "https://doh.pub/dns-query",
-        "*.qpic.cn": "https://doh.pub/dns-query",
-        "*.qlogo.cn": "https://doh.pub/dns-query",
-        "+.qq.com": "https://doh.pub/dns-query",
-        "+.qq.com.cn": "https://doh.pub/dns-query",
-        "*.qqmail.com": "https://doh.pub/dns-query",
-        "+.qzone.com": "https://doh.pub/dns-query",
-        "*.tencent-cloud.net": "https://doh.pub/dns-query",
-        "*.tencent-cloud.com": "https://doh.pub/dns-query",
-        "+.tencent.com": "https://doh.pub/dns-query",
-        "+.tencent.com.cn": "https://doh.pub/dns-query",
-        "+.tencentmusic.com": "https://doh.pub/dns-query",
-        "+.weixinbridge.com": "https://doh.pub/dns-query",
-        "+.weixin.com": "https://doh.pub/dns-query",
-        "+.weiyun.com": "https://doh.pub/dns-query",
-        "+.soso.com": "https://doh.pub/dns-query",
-        "+.sogo.com": "https://doh.pub/dns-query",
-        "+.sogou.com": "https://doh.pub/dns-query",
-        "*.sogoucdn.com": "https://doh.pub/dns-query",
-        "*.roblox.cn": "https://doh.pub/dns-query",
-        "+.robloxdev.cn": "https://doh.pub/dns-query",
-        "+.wegame.com": "https://doh.pub/dns-query",
-        "+.wegame.com.cn": "https://doh.pub/dns-query",
-        "+.wegameplus.com": "https://doh.pub/dns-query",
-        "+.cdn-go.cn": "https://doh.pub/dns-query",
-        "*.tencentcs.cn": "https://doh.pub/dns-query",
-        "*.qcloudimg.com": "https://doh.pub/dns-query",
-        "+.dnspod.cn": "https://doh.pub/dns-query",
-        "+.anticheatexpert.com": "https://doh.pub/dns-query",
-        "url.cn": "https://doh.pub/dns-query",
-        "*.qlivecdn.com": "https://doh.pub/dns-query",
-        "*.tcdnlive.com": "https://doh.pub/dns-query",
-        "*.dnsv1.com": "https://doh.pub/dns-query",
-        "*.smtcdns.net": "https://doh.pub/dns-query",
-        "+.coding.net": "https://doh.pub/dns-query",
-        "*.codehub.cn": "https://doh.pub/dns-query",
-        "tx-safety-video.acfun.cn": "https://doh.pub/dns-query",
-        "acg.tv": "https://doh.pub/dns-query",
-        "b23.tv": "https://doh.pub/dns-query",
-        "+.bilibili.cn": "https://doh.pub/dns-query",
-        "+.bilibili.com": "https://doh.pub/dns-query",
-        "*.acgvideo.com": "https://doh.pub/dns-query",
-        "*.bilivideo.com": "https://doh.pub/dns-query",
-        "*.bilivideo.cn": "https://doh.pub/dns-query",
-        "*.bilivideo.net": "https://doh.pub/dns-query",
-        "*.hdslb.com": "https://doh.pub/dns-query",
-        "*.biliimg.com": "https://doh.pub/dns-query",
-        "*.biliapi.com": "https://doh.pub/dns-query",
-        "*.biliapi.net": "https://doh.pub/dns-query",
-        "+.biligame.com": "https://doh.pub/dns-query",
-        "*.biligame.net": "https://doh.pub/dns-query",
-        "+.bilicomic.com": "https://doh.pub/dns-query",
-        "+.bilicomics.com": "https://doh.pub/dns-query",
-        "*.bilicdn1.com": "https://doh.pub/dns-query",
-        "*.bulicdn2.com": "https://doh.pub/dns-query",
-        "+.mi.com": "https://doh.pub/dns-query",
-        "+.duokan.com": "https://doh.pub/dns-query",
-        "*.mi-img.com": "https://doh.pub/dns-query",
-        "*.mi-idc.com": "https://doh.pub/dns-query",
-        "*.xiaoaisound.com": "https://doh.pub/dns-query",
-        "*.xiaomixiaoai.com": "https://doh.pub/dns-query",
-        "*.mi-fds.com": "https://doh.pub/dns-query",
-        "*.mifile.cn": "https://doh.pub/dns-query",
-        "*.mijia.tech": "https://doh.pub/dns-query",
-        "+.miui.com": "https://doh.pub/dns-query",
-        "+.xiaomi.com": "https://doh.pub/dns-query",
-        "+.xiaomi.cn": "https://doh.pub/dns-query",
-        "+.xiaomi.net": "https://doh.pub/dns-query",
-        "+.xiaomiev.com": "https://doh.pub/dns-query",
-        "+.xiaomiyoupin.com": "https://doh.pub/dns-query",
-        "+.gorouter.info": "https://doh.pub/dns-query",
-        "+.bytedance.com": "180.184.2.2",
-        "*.bytecdn.cn": "180.184.2.2",
-        "*.volccdn.com": "180.184.2.2",
-        "*.toutiaoimg.com": "180.184.2.2",
-        "*.toutiaoimg.cn": "180.184.2.2",
-        "*.toutiaostatic.com": "180.184.2.2",
-        "*.toutiaovod.com": "180.184.2.2",
-        "*.toutiaocloud.com": "180.184.2.2",
-        "+.toutiaopage.com": "180.184.2.2",
-        "+.feiliao.com": "180.184.2.2",
-        "+.iesdouyin.com": "180.184.2.2",
-        "*.pstatp.com": "180.184.2.2",
-        "+.snssdk.com": "180.184.2.2",
-        "*.bytegoofy.com": "180.184.2.2",
-        "+.toutiao.com": "180.184.2.2",
-        "+.feishu.cn": "180.184.2.2",
-        "+.feishu.net": "180.184.2.2",
-        "*.feishucdn.com": "180.184.2.2",
-        "*.feishupkg.com": "180.184.2.2",
-        "+.douyin.com": "180.184.2.2",
-        "*.douyinpic.com": "180.184.2.2",
-        "*.douyinstatic.com": "180.184.2.2",
-        "*.douyincdn.com": "180.184.2.2",
-        "*.douyinliving.com": "180.184.2.2",
-        "*.douyinvod.com": "180.184.2.2",
-        "+.huoshan.com": "180.184.2.2",
-        "*.huoshanstatic.com": "180.184.2.2",
-        "+.huoshanzhibo.com": "180.184.2.2",
-        "+.ixigua.com": "180.184.2.2",
-        "*.ixiguavideo.com": "180.184.2.2",
-        "*.ixgvideo.com": "180.184.2.2",
-        "*.byted-static.com": "180.184.2.2",
-        "+.volces.com": "180.184.2.2",
-        "+.baike.com": "180.184.2.2",
-        "*.zjcdn.com": "180.184.2.2",
-        "*.zijieapi.com": "180.184.2.2",
-        "+.feelgood.cn": "180.184.2.2",
-        "*.bytetcc.com": "180.184.2.2",
-        "*.bytednsdoc.com": "180.184.2.2",
-        "*.byteimg.com": "180.184.2.2",
-        "*.byteacctimg.com": "180.184.2.2",
-        "*.ibytedapm.com": "180.184.2.2",
-        "+.oceanengine.com": "180.184.2.2",
-        "*.edge-byted.com": "180.184.2.2",
-        "*.volcvideo.com": "180.184.2.2",
-        "*.bytecdntp.com": "180.184.2.2",
-        "+.91.com": "180.76.76.76",
-        "+.hao123.com": "180.76.76.76",
-        "+.baidu.cn": "180.76.76.76",
-        "+.baidu.com": "180.76.76.76",
-        "+.iqiyi.com": "180.76.76.76",
-        "*.iqiyipic.com": "180.76.76.76",
-        "*.baidubce.com": "180.76.76.76",
-        "*.bcelive.com": "180.76.76.76",
-        "*.baiducontent.com": "180.76.76.76",
-        "*.baidustatic.com": "180.76.76.76",
-        "*.bdstatic.com": "180.76.76.76",
-        "*.bdimg.com": "180.76.76.76",
-        "*.bcebos.com": "180.76.76.76",
-        "*.baidupcs.com": "180.76.76.76",
-        "*.baidubcr.com": "180.76.76.76",
-        "*.yunjiasu-cdn.net": "180.76.76.76",
-        "+.tieba.com": "180.76.76.76",
-        "+.xiaodutv.com": "180.76.76.76",
-        "*.shifen.com": "180.76.76.76",
-        "*.jomodns.com": "180.76.76.76",
-        "*.bdydns.com": "180.76.76.76",
-        "*.jomoxc.com": "180.76.76.76",
-        "*.duapp.com": "180.76.76.76",
-        "*.antpcdn.com": "180.76.76.76",
-        "upos-sz-mirrorbd.bilivideo.com": "180.76.76.76",
-        "upos-sz-mirrorbos.bilivideo.com": "180.76.76.76",
-        "*.qhimg.com": "https://doh.360.cn/dns-query",
-        "*.qhimgs.com": "https://doh.360.cn/dns-query",
-        "*.qhres.com": "https://doh.360.cn/dns-query",
-        "*.qhres2.com": "https://doh.360.cn/dns-query",
-        "*.qhmsg.com": "https://doh.360.cn/dns-query",
-        "*.qhstatic.com": "https://doh.360.cn/dns-query",
-        "*.qhupdate.com": "https://doh.360.cn/dns-query",
-        "*.qihucdn.com": "https://doh.360.cn/dns-query",
-        "+.360.com": "https://doh.360.cn/dns-query",
-        "+.360.cn": "https://doh.360.cn/dns-query",
-        "+.360.net": "https://doh.360.cn/dns-query",
-        "+.360safe.com": "https://doh.360.cn/dns-query",
-        "*.360tpcdn.com": "https://doh.360.cn/dns-query",
-        "+.360os.com": "https://doh.360.cn/dns-query",
-        "*.360webcache.com": "https://doh.360.cn/dns-query",
-        "+.360kuai.com": "https://doh.360.cn/dns-query",
-        "+.so.com": "https://doh.360.cn/dns-query",
-        "+.haosou.com": "https://doh.360.cn/dns-query",
-        "+.yunpan.cn": "https://doh.360.cn/dns-query",
-        "+.yunpan.com": "https://doh.360.cn/dns-query",
-        "+.yunpan.com.cn": "https://doh.360.cn/dns-query",
-        "*.qh-cdn.com": "https://doh.360.cn/dns-query",
-        "+.baomitu.com": "https://doh.360.cn/dns-query",
-        "+.qiku.com": "https://doh.360.cn/dns-query",
-        "+.securelogin.com.cn": "system",
-        "captive.apple.com": "system",
-        "hotspot.cslwifi.com": "system",
-        "*.m2m": "system",
-        "injections.adguard.org": "system",
-        "local.adguard.org": "system",
-        "*.bogon": "system",
-        "*.home": "system",
-        "instant.arubanetworks.com": "system",
-        "setmeup.arubanetworks.com": "system",
-        "router.asus.com": "system",
-        "repeater.asus.com": "system",
-        "+.asusrouter.com": "system",
-        "+.routerlogin.net": "system",
-        "+.routerlogin.com": "system",
-        "+.tplinkwifi.net": "system",
-        "+.tplogin.cn": "system",
-        "+.tplinkap.net": "system",
-        "+.tplinkmodem.net": "system",
-        "+.tplinkplclogin.net": "system",
-        "+.tplinkrepeater.net": "system",
-        "*.ui.direct": "system",
-        "unifi": "system",
-        "*.huaweimobilewifi.com": "system",
-        "*.router": "system",
-        "aterm.me": "system",
-        "console.gl-inet.com": "system",
-        "homerouter.cpe": "system",
-        "mobile.hotspot": "system",
-        "ntt.setup": "system",
-        "pi.hole": "system",
-        "*.plex.direct": "system",
-        "+.10.in-addr.arpa": "system",
-        "+.16.172.in-addr.arpa": "system",
-        "+.17.172.in-addr.arpa": "system",
-        "+.18.172.in-addr.arpa": "system",
-        "+.19.172.in-addr.arpa": "system",
-        "+.20.172.in-addr.arpa": "system",
-        "+.21.172.in-addr.arpa": "system",
-        "+.22.172.in-addr.arpa": "system",
-        "+.23.172.in-addr.arpa": "system",
-        "+.24.172.in-addr.arpa": "system",
-        "+.25.172.in-addr.arpa": "system",
-        "+.26.172.in-addr.arpa": "system",
-        "+.27.172.in-addr.arpa": "system",
-        "+.28.172.in-addr.arpa": "system",
-        "+.29.172.in-addr.arpa": "system",
-        "+.30.172.in-addr.arpa": "system",
-        "+.31.172.in-addr.arpa": "system",
-        "+.168.192.in-addr.arpa": "system",
-        "+.254.169.in-addr.arpa": "system",
-        "*.lan": "system",
-        "*.local": "system",
-        "*.internal": "system",
-        "*.localdomain": "system",
-        "+.home.arpa": "system"
-    };
+    const policyGroups = [
+        {
+            dnsTarget: "quic://dns.alidns.com:853",
+            domains: [
+                "dns.alidns.com", "+.uc.cn", "+.alibaba.com", "*.alicdn.com", "*.ialicdn.com", "*.myalicdn.com",
+                "*.alidns.com", "*.aliimg.com", "+.aliyun.com", "*.aliyuncs.com", "*.alikunlun.com", "*.alikunlun.net",
+                "*.cdngslb.com", "+.alipay.com", "+.alipay.cn", "+.alipay.com.cn", "*.alipayobjects.com", "+.alibaba-inc.com",
+                "*.alibabausercontent.com", "*.alibabadns.com", "+.alibabachengdun.com", "+.alicloudccp.com", "+.alipan.com",
+                "+.aliyundrive.com", "+.aliyundrive.net", "+.cainiao.com", "+.cainiao.com.cn", "+.cainiaoyizhan.com",
+                "+.guoguo-app.com", "+.etao.com", "+.yitao.com", "+.1688.com", "+.amap.com", "+.gaode.com", "+.autonavi.com",
+                "+.dingtalk.com", "+.mxhichina.com", "+.soku.com", "+.tb.cn", "*.tbcdn.cn", "+.taobao.com", "*.taobaocdn.com",
+                "*.tbcache.com", "+.tmall.com", "+.goofish.com", "+.xiami.com", "+.xiami.net", "*.ykimg.com", "+.youku.com",
+                "+.tudou.com", "*.cibntv.net", "+.ele.me", "*.elemecdn.com", "+.feizhu.com", "+.taopiaopiao.com", "+.fliggy.com",
+                "+.koubei.com", "+.mybank.cn", "+.mmstat.com", "+.uczzd.cn", "+.iconfont.cn", "+.freshhema.com", "+.hemamax.com",
+                "+.hemaos.com", "+.hemashare.cn", "+.shyhhema.com", "+.sm.cn", "+.npmmirror.com", "+.alios.cn", "+.wandoujia.com",
+                "+.aligames.com", "+.25pp.com", "*.aliapp.org", "+.tanx.com", "+.hellobike.com", "*.hichina.com", "*.yunos.com",
+                "*.nlark.com", "*.yuque.com", "upos-sz-mirrorali.bilivideo.com", "ali-safety-video.acfun.cn"
+            ]
+        },
+        {
+            dnsTarget: "https://doh.pub/dns-query",
+            domains: [
+                "doh.pub", "*.qcloud.com", "*.gtimg.cn", "*.gtimg.com", "*.gtimg.com.cn", "*.gdtimg.com", "*.idqqimg.com",
+                "*.udqqimg.com", "*.igamecj.com", "+.myapp.com", "*.myqcloud.com", "+.dnspod.com", "*.qpic.cn", "*.qlogo.cn",
+                "+.qq.com", "+.qq.com.cn", "*.qqmail.com", "+.qzone.com", "*.tencent-cloud.net", "*.tencent-cloud.com",
+                "+.tencent.com", "+.tencent.com.cn", "+.tencentmusic.com", "+.weixinbridge.com", "+.weixin.com", "+.weiyun.com",
+                "+.soso.com", "+.sogo.com", "+.sogou.com", "*.sogoucdn.com", "*.roblox.cn", "+.robloxdev.cn", "+.wegame.com",
+                "+.wegame.com.cn", "+.wegameplus.com", "+.cdn-go.cn", "*.tencentcs.cn", "*.qcloudimg.com", "+.dnspod.cn",
+                "+.anticheatexpert.com", "url.cn", "*.qlivecdn.com", "*.tcdnlive.com", "*.dnsv1.com", "*.smtcdns.net",
+                "+.coding.net", "*.codehub.cn", "tx-safety-video.acfun.cn", "acg.tv", "b23.tv", "+.bilibili.cn", "+.bilibili.com",
+                "*.acgvideo.com", "*.bilivideo.com", "*.bilivideo.cn", "*.bilivideo.net", "*.hdslb.com", "*.biliimg.com", "*.biliapi.com",
+                "*.biliapi.net", "+.biligame.com", "*.biligame.net", "+.bilicomic.com", "+.bilicomics.com", "*.bilicdn1.com", "*.bulicdn2.com",
+                "+.mi.com", "+.duokan.com", "*.mi-img.com", "*.mi-idc.com", "*.xiaoaisound.com", "*.xiaomixiaoai.com",
+                "*.mi-fds.com", "*.mifile.cn", "*.mijia.tech", "+.miui.com", "+.xiaomi.com", "+.xiaomi.cn", "+.xiaomi.net",
+                "+.xiaomiev.com", "+.xiaomiyoupin.com", "+.gorouter.info"
+            ]
+        },
+        {
+            dnsTarget: "180.184.2.2",
+            domains: [
+                "+.bytedance.com", "*.bytecdn.cn", "*.volccdn.com", "*.toutiaoimg.com", "*.toutiaoimg.cn", "*.toutiaostatic.com",
+                "*.toutiaovod.com", "*.toutiaocloud.com", "+.toutiaopage.com", "+.feiliao.com", "+.iesdouyin.com", "*.pstatp.com",
+                "+.snssdk.com", "*.bytegoofy.com", "+.toutiao.com", "+.feishu.cn", "+.feishu.net", "*.feishucdn.com", "*.feishupkg.com",
+                "+.douyin.com", "*.douyinpic.com", "*.douyinstatic.com", "*.douyincdn.com", "*.douyinliving.com", "*.douyinvod.com",
+                "+.huoshan.com", "*.huoshanstatic.com", "+.huoshanzhibo.com", "+.ixigua.com", "*.ixiguavideo.com", "*.ixgvideo.com",
+                "*.byted-static.com", "+.volces.com", "+.baike.com", "*.zjcdn.com", "*.zijieapi.com", "+.feelgood.cn", "*.bytetcc.com",
+                "*.bytednsdoc.com", "*.byteimg.com", "*.byteacctimg.com", "*.ibytedapm.com", "+.oceanengine.com", "*.edge-byted.com",
+                "*.volcvideo.com", "*.bytecdntp.com", "upos-sz-mirrorbd.bilivideo.com", "upos-sz-mirrorbos.bilivideo.com"
+            ]
+        },
+        {
+            dnsTarget: "180.76.76.76",
+            domains: [
+                "+.91.com", "+.hao123.com", "+.baidu.cn", "+.baidu.com", "+.iqiyi.com", "*.iqiyipic.com", "*.baidubce.com",
+                "*.bcelive.com", "*.baiducontent.com", "*.baidustatic.com", "*.bdstatic.com", "*.bdimg.com", "*.bcebos.com",
+                "*.baidupcs.com", "*.baidubcr.com", "*.yunjiasu-cdn.net", "+.tieba.com", "+.xiaodutv.com", "*.shifen.com",
+                "*.jomodns.com", "*.bdydns.com", "*.jomoxc.com", "*.duapp.com", "*.antpcdn.com"
+            ]
+        },
+        {
+            dnsTarget: "https://doh.360.cn/dns-query",
+            domains: [
+                "*.qhimg.com", "*.qhimgs.com", "*.qhres.com", "*.qhres2.com", "*.qhmsg.com", "*.qhstatic.com", "*.qhupdate.com",
+                "*.qihucdn.com", "+.360.com", "+.360.cn", "+.360.net", "+.360safe.com", "*.360tpcdn.com", "+.360os.com",
+                "*.360webcache.com", "+.360kuai.com", "+.so.com", "+.haosou.com", "+.yunpan.cn", "+.yunpan.com", "+.yunpan.com.cn",
+                "*.qh-cdn.com", "+.baomitu.com", "+.qiku.com"
+            ]
+        },
+        {
+            dnsTarget: "system",
+            domains: [
+                "+.securelogin.com.cn", "captive.apple.com", "hotspot.cslwifi.com", "*.m2m", "injections.adguard.org",
+                "local.adguard.org", "*.bogon", "*.home", "instant.arubanetworks.com", "setmeup.arubanetworks.com",
+                "router.asus.com", "repeater.asus.com", "+.asusrouter.com", "+.routerlogin.net", "+.routerlogin.com", "+.tplinkwifi.net",
+                "+.tplogin.cn", "+.tplinkap.net", "+.tplinkmodem.net", "+.tplinkplclogin.net", "+.tplinkrepeater.net", "*.ui.direct",
+                "unifi", "*.huaweimobilewifi.com", "*.router", "aterm.me", "console.gl-inet.com", "homerouter.cpe", "mobile.hotspot",
+                "ntt.setup", "pi.hole", "*.plex.direct", "+.10.in-addr.arpa", "+.16.172.in-addr.arpa", "+.17.172.in-addr.arpa",
+                "+.18.172.in-addr.arpa", "+.19.172.in-addr.arpa", "+.20.172.in-addr.arpa", "+.21.172.in-addr.arpa", "+.22.172.in-addr.arpa",
+                "+.23.172.in-addr.arpa", "+.24.172.in-addr.arpa", "+.25.172.in-addr.arpa", "+.26.172.in-addr.arpa", "+.27.172.in-addr.arpa",
+                "+.28.172.in-addr.arpa", "+.29.172.in-addr.arpa", "+.30.172.in-addr.arpa", "+.31.172.in-addr.arpa", "+.168.192.in-addr.arpa",
+                "+.254.169.in-addr.arpa", "*.lan", "*.local", "*.internal", "*.localdomain", "+.home.arpa"
+            ]
+        }
+    ];
+
+    const nameserverPolicy = {};
+    policyGroups.forEach(({ dnsTarget, domains }) => {
+        domains.forEach(d => nameserverPolicy[d] = dnsTarget);
+    });
     params.dns["nameserver-policy"] = nameserverPolicy;
 }
 
 function overwriteHosts(params) {
-    const hosts = {
+    params.hosts = {
         "dns.alidns.com": ['223.5.5.5', '223.6.6.6', '2400:3200:baba::1', '2400:3200::1'],
         "doh.pub": ['120.53.53.53', '1.12.12.12'],
         "cdn.jsdelivr.net": "cdn.jsdelivr.net.cdn.cloudflare.net"
     };
-    params.hosts = hosts;
 }
 
 function overwriteTunnel(params) {
-    const tunnelOptions = {
+    params.tun = {
         enable: true,
         stack: "mixed",
         device: "TUN",
@@ -452,183 +189,120 @@ function overwriteTunnel(params) {
         "auto-route": true,
         "auto-detect-interface": true,
         "strict-route": false,
-        "route-exclude-address": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10"],
+        "route-exclude-address": ["10.0.0.0/8", "172.16.0.0/12", "192.168.0.0/16", "100.64.0.0/10"]
     };
-    params.tun = { ...tunnelOptions };
 }
 
 function overwriteProxyGroups(params) {
-    const allProxies = params["proxies"].map((e) => e.name);
-    const excludePattern = EXCLUDE_KEYWORDS_PATTERN;
-
-    const includeTerms = {
-        HK: "(香港|HK|Hong|🇭🇰)",
-        TW: "(台湾|TW|Taiwan|Wan|🇹🇼|🇨🇳)",
-        SG: "(新加坡|狮城|SG|Singapore|🇸🇬)",
-        JP: "(日本|JP|Japan|🇯🇵)",
-        KR: "(韩国|韓|KR|Korea|🇰🇷)",
-        US: "(美国|US|United States|America|🇺🇸)",
-        UK: "(英国|UK|United Kingdom|🇬🇧)",
-        FR: "(法国|FR|France|🇫🇷)",
-        DE: "(德国|DE|Germany|🇩🇪)",
-    };
-
-    const autoProxyGroupRegexs = [
-        { name: "🇭🇰 香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "🇨🇳 台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "🇸🇬 狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "🇯🇵 日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "🇺🇸 美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), isMain: true },
-        { name: "🇰🇷 韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "🇬🇧 英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "🇫🇷 法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "🇩🇪 德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), isMain: false },
-        { name: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), isMain: false },
+    const allProxies = params.proxies.map(e => e.name);
+    const regionList = [
+        {
+            flag: "🇭🇰", name: "香港", keyword: "香港|HK|Hong|🇭🇰", isMain: true,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/HKflag.png"
+        },
+        {
+            flag: "🇨🇳", name: "台湾", keyword: "台湾|TW|Taiwan|Wan|🇹🇼|🇨🇳", isMain: true,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/TWflag.png"
+        },
+        {
+            flag: "🇸🇬", name: "狮城", keyword: "新加坡|狮城|SG|Singapore|🇸🇬", isMain: true,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/SGflag.png"
+        },
+        {
+            flag: "🇯🇵", name: "日本", keyword: "日本|JP|Japan|🇯🇵", isMain: true,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/JPflag.png"
+        },
+        {
+            flag: "🇺🇸", name: "美国", keyword: "美国|US|United States|America|🇺🇸", isMain: true,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/USflag.png"
+        },
+        {
+            flag: "🇰🇷", name: "韩国", keyword: "韩国|韓|KR|Korea|🇰🇷", isMain: false,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/KRflag.png"
+        },
+        {
+            flag: "🇬🇧", name: "英国", keyword: "英国|UK|United Kingdom|🇬🇧", isMain: false,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/UKflag.png"
+        },
+        {
+            flag: "🇫🇷", name: "法国", keyword: "法国|FR|France|🇫🇷", isMain: false,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/FRflag.png"
+        },
+        {
+            flag: "🇩🇪", name: "德国", keyword: "德国|DE|Germany|🇩🇪", isMain: false,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/DEflag.png"
+        },
+        {
+            flag: "", name: "低倍率", keyword: "(?:^|[^0-9])0\\.[1-9](?:$|[^0-9])", isMain: false,
+            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/0.x.png"
+        }
     ];
 
-    const validAutoGroupNames = new Set();
-    const autoProxyGroups = autoProxyGroupRegexs
-        .map((item) => {
-            const matchedProxies = getProxiesByRegex(params, item.regex, false);
-            if (matchedProxies.length > 0) {
-                validAutoGroupNames.add(item.name);
-            }
-            const baseConfig = {
-                name: item.name,
+    const autoProxyGroups = [];
+    const manualProxyGroupsConfig = [];
+    const groupedNodes = new Set();
+    const validAutoNames = new Set();
+
+    regionList.forEach(item => {
+        const regStr = `^(?=.*${item.keyword})(?!.*${EXCLUDE_KEYWORDS_PATTERN}).*$`;
+        const regex = new RegExp(regStr, "i");
+        const autoName = `${item.flag} ${item.name}-自动`.trim();
+        const manualName = `${item.flag} ${item.name}节点`.trim();
+        const matched = getProxiesByRegex(params, regex, false);
+
+        if (matched.length > 0) {
+            validAutoNames.add(autoName);
+            autoProxyGroups.push({
+                name: autoName,
                 type: "url-test",
                 url: "https://cp.cloudflare.com/generate_204",
                 interval: 900,
                 tolerance: 50,
-                proxies: matchedProxies.length > 0 ? matchedProxies : ["DIRECT"],
-                hidden: true, 
-            };
-            if (!item.isMain) {
-                baseConfig.lazy = true;
-            }
-            return baseConfig;
-        })
-        .filter((item) => validAutoGroupNames.has(item.name));
+                proxies: matched,
+                hidden: true,
+                lazy: !item.isMain
+            });
+        }
 
-    const manualProxyGroups = [
-        { name: "🇭🇰 香港节点", autoName: "🇭🇰 香港-自动", regex: new RegExp(`^(?=.*${includeTerms.HK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/HKflag.png" },
-        { name: "🇨🇳 台湾节点", autoName: "🇨🇳 台湾-自动", regex: new RegExp(`^(?=.*${includeTerms.TW})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/TWflag.png" },
-        { name: "🇯🇵 日本节点", autoName: "🇯🇵 日本-自动", regex: new RegExp(`^(?=.*${includeTerms.JP})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/JPflag.png" },
-        { name: "🇸🇬 狮城节点", autoName: "🇸🇬 狮城-自动", regex: new RegExp(`^(?=.*${includeTerms.SG})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/SGflag.png" },
-        { name: "🇺🇸 美国节点", autoName: "🇺🇸 美国-自动", regex: new RegExp(`^(?=.*${includeTerms.US})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/USflag.png" },
-        { name: "🇰🇷 韩国节点", autoName: "🇰🇷 韩国-自动", regex: new RegExp(`^(?=.*${includeTerms.KR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/KRflag.png" },
-        { name: "🇬🇧 英国节点", autoName: "🇬🇧 英国-自动", regex: new RegExp(`^(?=.*${includeTerms.UK})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/UKflag.png" },
-        { name: "🇫🇷 法国节点", autoName: "🇫🇷 法国-自动", regex: new RegExp(`^(?=.*${includeTerms.FR})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/FRflag.png" },
-        { name: "🇩🇪 德国节点", autoName: "🇩🇪 德国-自动", regex: new RegExp(`^(?=.*${includeTerms.DE})(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/DEflag.png" },
-        { name: "低倍率节点", autoName: "低倍率-自动", regex: new RegExp(`^(?=.*(?:^|[^0-9])0\\.[1-9](?:$|[^0-9]))(?!.*${excludePattern}).*$`, "i"), icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/0.x.png" }
-    ];
-
-    const groupedNodes = new Set();
-
-    const manualProxyGroupsConfig = manualProxyGroups
-        .map((item) => {
-            const matchedProxies = getProxiesByRegex(params, item.regex, false);
-            matchedProxies.forEach(node => groupedNodes.add(node));
-
-            const groupProxies = [];
-            if (validAutoGroupNames.has(item.autoName)) {
-                groupProxies.push(item.autoName);
-            }
-            groupProxies.push(...matchedProxies);
-
-            const config = {
-                name: item.name,
+        const selectProxies = [];
+        if (validAutoNames.has(autoName)) selectProxies.push(autoName);
+        selectProxies.push(...matched);
+        if (selectProxies.length > 0) {
+            matched.forEach(n => groupedNodes.add(n));
+            manualProxyGroupsConfig.push({
+                name: manualName,
                 type: "select",
-                proxies: groupProxies,
+                proxies: selectProxies,
                 hidden: false,
-            };
-            if (item.icon) config.icon = item.icon;
-            return config;
-        })
-        .filter((item) => item.proxies.length > 0);
+                icon: item.icon
+            });
+        }
+    });
 
-    const remainingNodes = allProxies.filter(node => !groupedNodes.has(node));
-
+    const remainNodes = allProxies.filter(n => !groupedNodes.has(n));
     const manualGroupNames = manualProxyGroupsConfig.map(g => g.name);
-    const commonGroupProxies = [...manualGroupNames, "DIRECT", ...remainingNodes];
-    
-    const proxyGroupProxies = [...manualGroupNames, "DIRECT", ...remainingNodes];
+    const baseSelectList = [...manualGroupNames, "DIRECT", ...remainNodes];
 
-    if (proxyGroupProxies.length === 0) proxyGroupProxies.push("DIRECT");
-    if (commonGroupProxies.length === 1) commonGroupProxies.push("DIRECT");
+    const topGroups = [
+        { name: "Proxy", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Proxy.png" },
+        { name: "AIGC", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/AI.png" },
+        { name: "Apple", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Apple.png" },
+        { name: "Google", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Google.png" },
+        { name: "Instagram", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Instagram.png" },
+        { name: "Microsoft", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Microsoft.png" },
+        { name: "Netflix", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Netflix.png" },
+        { name: "Telegram", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Telegram.png" },
+        { name: "TikTok", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Tiktok.png" },
+        { name: "YouTube", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Youtube.png" },
+        { name: "X", icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Twitter.png" }
+    ].map(g => ({
+        name: g.name,
+        type: "select",
+        icon: g.icon,
+        proxies: [...baseSelectList]
+    }));
 
-    const groups = [
-        {
-            name: "Proxy",
-            type: "select",
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Proxy.png",
-            proxies: proxyGroupProxies,
-        },
-        {
-            name: "AIGC",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/AI.png"
-        },
-        {
-            name: "Apple",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Apple.png"
-        },
-        {
-            name: "Google",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Google.png"
-        },
-        {
-            name: "Instagram",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Instagram.png"
-        },
-        {
-            name: "Microsoft",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Microsoft.png"
-        },
-        {
-            name: "Netflix",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Netflix.png"
-        },
-        {
-            name: "Telegram",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Telegram.png"
-        },
-        {
-            name: "TikTok",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Tiktok.png"
-        },
-        {
-            name: "YouTube",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Youtube.png"
-        },
-        {
-            name: "X",
-            type: "select",
-            proxies: commonGroupProxies,
-            icon: "https://cdn.jsdelivr.net/gh/Alex-repositories/icons_0@main/Twitter.png"
-        },
-    ];
-    
-    groups.push(...autoProxyGroups);
-    groups.push(...manualProxyGroupsConfig);
-    
-    params["proxy-groups"] = groups;
+    params["proxy-groups"] = [...topGroups, ...autoProxyGroups, ...manualProxyGroupsConfig];
 }
 
 function overwriteRules(params) {
@@ -648,7 +322,7 @@ function overwriteRules(params) {
         "RULE-SET,google,Google",
         "RULE-SET,netflix,Netflix",
         "RULE-SET,tiktok,TikTok",
-        "RULE-SET,meta,Instagram",
+        "RULE-SET,meta,Instagram"
     ];
     const nonipRules = [
         "RULE-SET,cdn_domainset,Proxy",
@@ -677,302 +351,180 @@ function overwriteRules(params) {
         "RULE-SET,china_ip,DIRECT",
         "MATCH,Proxy"
     ];
-    const rules = [
-        ...customRules,
-        ...adNonipRules,
-        ...serviceRuleSets,
-        ...nonipRules,
-        ...ipRules
-    ];
-    params.rules = rules;
+    params.rules = [...customRules, ...adNonipRules, ...serviceRuleSets, ...nonipRules, ...ipRules];
 
-    const ruleProviders = {
-        reject_non_ip_no_drop: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/reject-no-drop.txt",
-            path: "./rule_set/sukkaw_ruleset/reject_non_ip_no_drop.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        reject_non_ip_drop: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt",
-            path: "./rule_set/sukkaw_ruleset/reject_non_ip_drop.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        reject_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/reject.txt",
-            path: "./rule_set/sukkaw_ruleset/reject_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        reject_domainset: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/domainset/reject.txt",
-            path: "./rule_set/sukkaw_ruleset/reject_domainset.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        reject_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/ip/reject.txt",
-            path: "./rule_set/sukkaw_ruleset/reject_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        cdn_domainset: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/domainset/cdn.txt",
-            path: "./rule_set/sukkaw_ruleset/cdn_domainset.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        cdn_non_ip: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/non_ip/cdn.txt",
-            path: "./rule_set/sukkaw_ruleset/cdn_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        stream_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/stream.txt",
-            path: "./rule_set/sukkaw_ruleset/stream_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        stream_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/ip/stream.txt",
-            path: "./rule_set/sukkaw_ruleset/stream_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        ai_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/ai.txt",
-            path: "./rule_set/sukkaw_ruleset/ai_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        telegram_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/telegram.txt",
-            path: "./rule_set/sukkaw_ruleset/telegram_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        telegram_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/ip/telegram.txt",
-            path: "./rule_set/sukkaw_ruleset/telegram_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        youtube: {
-            type: "http",
-            behavior: "classical",
-            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.yaml",
-            path: "./rule_set/youtube.yaml",
-            interval: 43200,
-            format: "yaml",
-            proxy: "Proxy"
-        },
-        google: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/google.txt",
-            path: "./rule_set/google.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        netflix: {
-            type: "http",
-            behavior: "classical",
-            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.yaml",
-            path: "./rule_set/netflix.yaml",
-            interval: 43200,
-            format: "yaml",
-            proxy: "Proxy"
-        },
-        tiktok: {
-            type: "http",
-            behavior: "classical",
-            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml",
-            path: "./rule_set/tiktok.yaml",
-            interval: 43200,
-            format: "yaml",
-            proxy: "Proxy"
-        },
-        meta: {
-            type: "http",
-            behavior: "classical",
-            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Facebook/Facebook.yaml",
-            path: "./rule_set/meta.yaml",
-            interval: 43200,
-            format: "yaml",
-            proxy: "Proxy"
-        },
-        apple_cdn: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/domainset/apple_cdn.txt",
-            path: "./rule_set/sukkaw_ruleset/apple_cdn.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        apple_services: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/apple_services.txt",
-            path: "./rule_set/sukkaw_ruleset/apple_services.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        apple_cn_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/apple_cn.txt",
-            path: "./rule_set/sukkaw_ruleset/apple_cn_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        microsoft_cdn_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/microsoft_cdn.txt",
-            path: "./rule_set/sukkaw_ruleset/microsoft_cdn_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        microsoft_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/microsoft.txt",
-            path: "./rule_set/sukkaw_ruleset/microsoft_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        download_domainset: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/domainset/download.txt",
-            path: "./rule_set/sukkaw_ruleset/download_domainset.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        download_non_ip: {
-            type: "http",
-            behavior: "domain",
-            url: "https://ruleset.skk.moe/Clash/non_ip/download.txt",
-            path: "./rule_set/sukkaw_ruleset/download_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        lan_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/lan.txt",
-            path: "./rule_set/sukkaw_ruleset/lan_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        lan_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/ip/lan.txt",
-            path: "./rule_set/sukkaw_ruleset/lan_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        domestic_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/domestic.txt",
-            path: "./rule_set/sukkaw_ruleset/domestic_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        direct_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/direct.txt",
-            path: "./rule_set/sukkaw_ruleset/direct_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        global_non_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/non_ip/global.txt",
-            path: "./rule_set/sukkaw_ruleset/global_non_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        domestic_ip: {
-            type: "http",
-            behavior: "classical",
-            url: "https://ruleset.skk.moe/Clash/ip/domestic.txt",
-            path: "./rule_set/sukkaw_ruleset/domestic_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        },
-        china_ip: {
-            type: "http",
-            behavior: "ipcidr",
-            url: "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
-            path: "./rule_set/sukkaw_ruleset/china_ip.txt",
-            interval: 43200,
-            format: "text",
-            proxy: "Proxy"
-        }
+    const baseProvider = {
+        type: "http",
+        interval: 43200,
+        proxy: "Proxy"
     };
-    params["rule-providers"] = ruleProviders;
-    params["rules"] = rules;
+    const providerList = [
+        {
+            key: "reject_non_ip_no_drop", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/reject-no-drop.txt",
+            path: "./rule_set/sukkaw_ruleset/reject_non_ip_no_drop.txt"
+        },
+        {
+            key: "reject_non_ip_drop", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/reject-drop.txt",
+            path: "./rule_set/sukkaw_ruleset/reject_non_ip_drop.txt"
+        },
+        {
+            key: "reject_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/reject.txt",
+            path: "./rule_set/sukkaw_ruleset/reject_non_ip.txt"
+        },
+        {
+            key: "reject_domainset", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/domainset/reject.txt",
+            path: "./rule_set/sukkaw_ruleset/reject_domainset.txt"
+        },
+        {
+            key: "reject_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/reject.txt",
+            path: "./rule_set/sukkaw_ruleset/reject_ip.txt"
+        },
+        {
+            key: "cdn_domainset", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/domainset/cdn.txt",
+            path: "./rule_set/sukkaw_ruleset/cdn_domainset.txt"
+        },
+        {
+            key: "cdn_non_ip", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/cdn.txt",
+            path: "./rule_set/sukkaw_ruleset/cdn_non_ip.txt"
+        },
+        {
+            key: "stream_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/stream.txt",
+            path: "./rule_set/sukkaw_ruleset/stream_non_ip.txt"
+        },
+        {
+            key: "stream_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/stream.txt",
+            path: "./rule_set/sukkaw_ruleset/stream_ip.txt"
+        },
+        {
+            key: "ai_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/ai.txt",
+            path: "./rule_set/sukkaw_ruleset/ai_non_ip.txt"
+        },
+        {
+            key: "telegram_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/telegram.txt",
+            path: "./rule_set/sukkaw_ruleset/telegram_non_ip.txt"
+        },
+        {
+            key: "telegram_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/telegram.txt",
+            path: "./rule_set/sukkaw_ruleset/telegram_ip.txt"
+        },
+        {
+            key: "youtube", behavior: "classical", format: "yaml",
+            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/YouTube/YouTube.yaml",
+            path: "./rule_set/youtube.yaml"
+        },
+        {
+            key: "google", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/google.txt",
+            path: "./rule_set/google.txt"
+        },
+        {
+            key: "netflix", behavior: "classical", format: "yaml",
+            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Netflix/Netflix.yaml",
+            path: "./rule_set/netflix.yaml"
+        },
+        {
+            key: "tiktok", behavior: "classical", format: "yaml",
+            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/TikTok/TikTok.yaml",
+            path: "./rule_set/tiktok.yaml"
+        },
+        {
+            key: "meta", behavior: "classical", format: "yaml",
+            url: "https://cdn.jsdelivr.net/gh/blackmatrix7/ios_rule_script@master/rule/Clash/Facebook/Facebook.yaml",
+            path: "./rule_set/meta.yaml"
+        },
+        {
+            key: "apple_cdn", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/domainset/apple_cdn.txt",
+            path: "./rule_set/sukkaw_ruleset/apple_cdn.txt"
+        },
+        {
+            key: "apple_services", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/apple_services.txt",
+            path: "./rule_set/sukkaw_ruleset/apple_services.txt"
+        },
+        {
+            key: "apple_cn_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/apple_cn.txt",
+            path: "./rule_set/sukkaw_ruleset/apple_cn_non_ip.txt"
+        },
+        {
+            key: "microsoft_cdn_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/microsoft_cdn.txt",
+            path: "./rule_set/sukkaw_ruleset/microsoft_cdn_non_ip.txt"
+        },
+        {
+            key: "microsoft_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/microsoft.txt",
+            path: "./rule_set/sukkaw_ruleset/microsoft_non_ip.txt"
+        },
+        {
+            key: "download_domainset", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/domainset/download.txt",
+            path: "./rule_set/sukkaw_ruleset/download_domainset.txt"
+        },
+        {
+            key: "download_non_ip", behavior: "domain", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/download.txt",
+            path: "./rule_set/sukkaw_ruleset/download_non_ip.txt"
+        },
+        {
+            key: "lan_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/lan.txt",
+            path: "./rule_set/sukkaw_ruleset/lan_non_ip.txt"
+        },
+        {
+            key: "lan_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/lan.txt",
+            path: "./rule_set/sukkaw_ruleset/lan_ip.txt"
+        },
+        {
+            key: "domestic_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/domestic.txt",
+            path: "./rule_set/sukkaw_ruleset/domestic_non_ip.txt"
+        },
+        {
+            key: "direct_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/direct.txt",
+            path: "./rule_set/sukkaw_ruleset/direct_non_ip.txt"
+        },
+        {
+            key: "global_non_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/non_ip/global.txt",
+            path: "./rule_set/sukkaw_ruleset/global_non_ip.txt"
+        },
+        {
+            key: "domestic_ip", behavior: "classical", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/domestic.txt",
+            path: "./rule_set/sukkaw_ruleset/domestic_ip.txt"
+        },
+        {
+            key: "china_ip", behavior: "ipcidr", format: "text",
+            url: "https://ruleset.skk.moe/Clash/ip/china_ip.txt",
+            path: "./rule_set/sukkaw_ruleset/china_ip.txt"
+        }
+    ];
+
+    params["rule-providers"] = Object.fromEntries(
+        providerList.map(p => [
+            p.key,
+            { ...baseProvider, behavior: p.behavior, format: p.format, url: p.url, path: p.path }
+        ])
+    );
 }
 
 function getProxiesByRegex(params, regex, fallbackToDirect = true) {
-    const matchedProxies = params.proxies.filter((e) => regex.test(e.name)).map((e) => e.name);
-    if (matchedProxies.length > 0) return matchedProxies;
-    return fallbackToDirect ? ["DIRECT"] : [];
+    const matchedProxies = params.proxies.filter(e => regex.test(e.name)).map(e => e.name);
+    return matchedProxies.length > 0 ? matchedProxies : (fallbackToDirect ? ["DIRECT"] : []);
 }
